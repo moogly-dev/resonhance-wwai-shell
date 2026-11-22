@@ -10,7 +10,7 @@ Un kit à poser dans un projet pour travailler avec Claude Code sans perdre le f
 
 ## Nouveau projet
 
-1. En haut de cette page GitHub : **Use this template** → **Create a new repository**.
+1. Connecté à GitHub, au-dessus de la liste des fichiers : **Use this template** → **Create a new repository**.
 2. Clone ton nouveau dépôt comme n'importe quel autre.
 
 Sans passer par GitHub, une seule ligne à coller, `mon-projet` remplacé par le nom de ton dossier :
