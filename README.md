@@ -17,7 +17,7 @@ Dans Git Bash :
    git clone https://github.com/moogly-dev/resonhance-wwai-shell.git /d/dev/<projet>     # ou : cp -r /d/dev/resonhance-wwai-shell /d/dev/<projet>
    cd /d/dev/<projet> && rm -rf .git node_modules ai/bin ai/tmp ai/claude/usage.json ai/session.md ai/mini-hub.md ai/improvements.md
    ```
-2. Ouvrir Claude Code dans le dossier et accepter les hooks (`/hooks`). Au premier lancement, `ai/session.md`, `ai/mini-hub.md` et `ai/improvements.md` naissent vides, et `check:ai` renvoie Claude vers `ai/demarrage.md` : il te guide pas à pas, du `.gitignore` au premier commit, en passant par le Socle et le premier objectif.
+2. Ouvrir Claude Code dans le dossier et accepter la confiance du dossier (« trust ») à la première ouverture : sans elle, les autorisations de `.claude/settings.json` ne s'appliquent pas. Les hooks, eux, tournent dès l'ouverture, sans autre accord : lire `ai/scripts/hook.mts` avant pour savoir ce qu'ils font ; `/hooks` les affiche ensuite, en lecture seule. Au premier lancement, `ai/session.md`, `ai/mini-hub.md` et `ai/improvements.md` naissent vides, et `check:ai` renvoie Claude vers `ai/demarrage.md` : il te guide pas à pas, du `.gitignore` au premier commit, en passant par le Socle et le premier objectif.
 
 À la main, ce parcours revient à :
 

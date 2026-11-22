@@ -7,7 +7,7 @@ Une étape à la fois, dans l'ordre, cochée une fois faite. Les commandes sont 
 - [ ] **Copie propre** : ni `.git` hérité du shell, ni `node_modules`, `ai/bin`, `ai/tmp`, `ai/claude/usage.json`, ni `context/` hérité ; sinon afficher le nettoyage du README (étape 1).
 - [ ] **Git du projet** : `mv gitignore.projet .gitignore` ; `CLAUDE.md`, `ai/`, `.claude/`, `context/` et `.ignore` sortent alors de git.
 - [ ] **Outillage** : nom du projet dans `package.json` ; fusion avec l'outil de création s'il est déjà passé (README, étape 3) ; `npm install`, `npm run check:ai`, `npm test` depuis `/D/…`.
-- [ ] **Réglages de Claude** : `docs/claude-settings.md` appliqué aux réglages globaux, hooks acceptés par `/hooks`.
+- [ ] **Réglages de Claude** : `docs/claude-settings.md` appliqué aux réglages globaux, confiance du dossier acceptée, les trois hooks visibles dans `/hooks`.
 - [ ] **Socle** : une question à la fois, dans l'ordre du Socle (problème, solution, but, problématiques, puis nature, stack, données, textes, git, ordre de développement, sauvegarde) ; chaque réponse revient sous la forme avant -> après, dans les mots de l'utilisateur, et il l'applique.
 - [ ] **Stack** : `CODE_DIRS` de `ai/scripts/check-ai.mts` et la section build du `.gitignore` réglés selon le Socle.
 - [ ] **Premier objectif** : inscrit en ENTRÉE de `ai/mini-hub.md`, validé, puis posé dans `ai/00-objectifs.md` avec sa mesure.
