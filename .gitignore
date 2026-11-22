@@ -1,0 +1,29 @@
+# Le shell versionne son outillage IA (CLAUDE.md, ai/, .claude/settings.json) : c'est ce qu'il publie.
+# Ce qui naît à l'usage ou n'appartient qu'à une session reste dehors.
+ai/bin/
+ai/tmp/
+ai/claude/usage.json
+ai/session.md
+ai/mini-hub.md
+ai/improvements.md
+.claude/settings.local.json
+context/
+
+# Security & environment
+.env
+.env.local
+.env*.local
+
+# Dependencies & build
+node_modules/
+dist/
+build/
+*.tsbuildinfo
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS & IDE
+.DS_Store
+.vscode/

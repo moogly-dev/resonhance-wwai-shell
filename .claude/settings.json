@@ -1,0 +1,43 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run check:ai*)",
+      "Bash(npm run ai:bin *)",
+      "Bash(npm run ai:apply *)",
+      "Bash(npm run ai:tmp*)",
+      "Bash(npm run test)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd \"$CLAUDE_PROJECT_DIR\" && node ai/scripts/hook.mts"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd \"$CLAUDE_PROJECT_DIR\" && node ai/scripts/hook.mts"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd \"$CLAUDE_PROJECT_DIR\" && node ai/scripts/hook.mts"
+          }
+        ]
+      }
+    ]
+  }
+}
