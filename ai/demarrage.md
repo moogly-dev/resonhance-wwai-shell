@@ -4,8 +4,8 @@ Parcours de Claude au premier usage du shell dans un projet, signalé par `npm r
 
 Claude mène : l'utilisateur n'a rien à lire. Une étape à la fois, dite en une phrase, cochée une fois faite. Les commandes sont données pour bash (Git Bash sous Windows) ; git, suppression et installation, l'utilisateur les lance, sauf s'il demande à Claude de le faire. Une fois tout coché : `npm run ai:bin -- demarrage ai/demarrage.md`, puis supprimer ce fichier.
 
-- [ ] **Cas** : projet neuf (cloné du shell) ou projet existant (son code, son `.git`, le shell cloné à côté en `../wwai-shell`). Un `.git` dont l'origine est le dépôt du shell se retire (`rm -rf .git`) ; le `.git` d'un projet existant ne se touche jamais.
-- [ ] **Git du projet** : projet neuf, `mv gitignore.projet .gitignore` ; projet existant, ajouter les lignes « AI » de `gitignore.projet` à son `.gitignore`, puis retirer `gitignore.projet`. `CLAUDE.md`, `ai/`, `.claude/`, `context/` et `.ignore` sortent ainsi de git.
+- [ ] **Cas** : projet neuf (dépôt créé par « Use this template », ou shell cloné sans son `.git`) ou projet existant (son code, son `.git`, le shell cloné à côté en `../wwai-shell`). Un `.git` dont l'origine est le dépôt du shell se retire (`rm -rf .git`) ; le `.git` d'un projet existant ne se touche jamais.
+- [ ] **Git du projet** : projet neuf, `mv gitignore.projet .gitignore` ; projet existant, ajouter les lignes « AI » de `gitignore.projet` à son `.gitignore`, puis retirer `gitignore.projet`. `CLAUDE.md`, `ai/`, `.claude/`, `context/` et `.ignore` sortent ainsi de git ; déjà suivis (dépôt créé par le template), ils en sortent aussi par `git rm -r --cached CLAUDE.md ai .claude .ignore`, sans être supprimés du disque.
 - [ ] **Fusion (projet existant)** : ce que la copie a sauté parce qu'il existait déjà (`CLAUDE.md`, `.claude/settings.json`, `vitest.config.mts`) se fusionne depuis `../wwai-shell` ; `package.json` reçoit les scripts `check:ai`, `ai:bin`, `ai:apply`, `ai:tmp` et les devDependencies `vitest` et `@types/node` aux versions du shell, et son script de test lance aussi `ai/scripts/`. Puis `rm -rf ../wwai-shell`.
 - [ ] **Outillage** : nom du projet dans `package.json` (projet neuf) ; `npm install`, `npm run check:ai`, `npm test` ; sous Windows, `npm test` depuis `/D/…`, lettre de lecteur en majuscule, sinon Vitest échoue.
 - [ ] **Réglages de Claude** : proposer, sans l'imposer, les réglages globaux de `docs/claude-settings.md` : ce qu'ils changent en trois lignes, et le bloc à coller.
@@ -13,5 +13,5 @@ Claude mène : l'utilisateur n'a rien à lire. Une étape à la fois, dite en un
 - [ ] **Stack** : `CODE_DIRS` de `ai/scripts/check-ai.mts` et la section build du `.gitignore` réglés selon le Socle.
 - [ ] **Premier objectif** : inscrit en ENTRÉE de `ai/mini-hub.md`, validé, puis posé dans `ai/00-objectifs.md` avec sa mesure.
 - [ ] **Fichiers du shell (projet neuf)** : le README de l'application remplace celui du shell ; `LICENSE` et `docs/claude-settings.md` gardés ou retirés selon l'utilisateur ; la convention de commits de `docs/` reste, `CLAUDE.md` la cite.
-- [ ] **Premier commit** : `git init` pour un projet neuf, puis le commit, sans attribution ; le dépôt distant, si l'utilisateur en veut un.
+- [ ] **Premier commit** : `git init` si le projet n'a pas de `.git`, puis le commit, sans attribution ; le dépôt distant, si l'utilisateur en veut un et n'en a pas déjà.
 - [ ] **Retours** : chaque friction de ce démarrage va dans `ai/improvements.md`.

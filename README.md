@@ -10,13 +10,16 @@ Un kit à poser dans un projet pour travailler avec Claude Code sans perdre le f
 
 ## Nouveau projet
 
-Une seule ligne à coller, `mon-projet` remplacé par le nom de ton dossier :
+1. En haut de cette page GitHub : **Use this template** → **Create a new repository**.
+2. Clone ton nouveau dépôt comme n'importe quel autre.
+
+Sans passer par GitHub, une seule ligne à coller, `mon-projet` remplacé par le nom de ton dossier :
 
 ```bash
 git clone --depth 1 https://github.com/moogly-dev/resonhance-wwai-shell.git mon-projet && rm -rf mon-projet/.git
 ```
 
-Ouvre le dossier dans ton éditeur, lance Claude Code, accepte la confiance du dossier, puis écris **on démarre** : Claude te guide pour tout le reste, une étape à la fois.
+Puis ouvre le dossier dans ton éditeur, lance Claude Code, accepte la confiance du dossier, puis écris **on démarre** : Claude te guide pour tout le reste, une étape à la fois.
 
 ## Projet existant
 
