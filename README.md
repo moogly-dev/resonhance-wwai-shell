@@ -6,27 +6,24 @@ Un kit à poser dans un projet pour travailler avec Claude Code sans perdre le f
 
 - [Claude Code](https://code.claude.com)
 - Node 24.2 ou plus
-- Sous Windows : Git Bash
+- Sous Windows : Git Bash, où `D:\dev` s'écrit `/d/dev`
 
 ## Nouveau projet
 
+Une seule ligne à coller, `mon-projet` remplacé par le nom de ton dossier :
+
 ```bash
-git clone --depth 1 https://github.com/moogly-dev/resonhance-wwai-shell.git mon-projet
-cd mon-projet
-rm -rf .git
-claude
+git clone --depth 1 https://github.com/moogly-dev/resonhance-wwai-shell.git mon-projet && cd mon-projet && rm -rf .git && claude
 ```
 
 Accepte la confiance du dossier, puis écris **on démarre** : Claude te guide pour tout le reste, une étape à la fois.
 
 ## Projet existant
 
-Depuis le dossier de ton projet :
+Une seule ligne à coller, depuis le dossier de ton projet :
 
 ```bash
-git clone --depth 1 https://github.com/moogly-dev/resonhance-wwai-shell.git ../wwai-shell
-cp -rn ../wwai-shell/{CLAUDE.md,.claude,ai,.ignore,docs,gitignore.projet,vitest.config.mts} .
-claude
+git clone --depth 1 https://github.com/moogly-dev/resonhance-wwai-shell.git ../wwai-shell && cp -rn ../wwai-shell/{CLAUDE.md,.claude,ai,.ignore,docs,gitignore.projet,vitest.config.mts} . && claude
 ```
 
 Accepte la confiance du dossier, puis écris **on démarre** : Claude fusionne ce que ton projet avait déjà et te guide pour le reste.
