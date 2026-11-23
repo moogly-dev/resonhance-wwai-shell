@@ -1,10 +1,10 @@
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
 
-import { MEMORY, handle } from "./hook.mts";
+import { MEMORY, finishStart, handle } from "./hook.mts";
 import { readLedger, readSession } from "./usage.mts";
 
 const NOW = new Date("2026-11-18T12:00:00");
@@ -33,6 +33,26 @@ describe("début de session", () => {
     await run({ hook_event_name: "SessionStart", source: "startup" });
     expect(readFileSync(join(root, "ai/session.md"), "utf8")).toBe("# Session\n");
     expect(readFileSync(join(root, "ai/mini-hub.md"), "utf8")).toBe(MEMORY["ai/mini-hub.md"]);
+  });
+
+  test("retire le démarrage une fois achevé, copie gardée dans ai/bin", async () => {
+    writeFileSync(join(root, "ai/demarrage.md"), "# Démarrage\n");
+    writeFileSync(join(root, "ai/00-objectifs.md"), "# 00\n\n### O-1 — Lancer\n");
+    expect((await run({ hook_event_name: "SessionStart", source: "startup" })).stdout).toMatch(/^Démarrage achevé : ai\/demarrage\.md retiré \(copie dans ai\/bin\/2026-11-18-demarrage\)\./);
+    expect(existsSync(join(root, "ai/demarrage.md"))).toBe(false);
+    expect(existsSync(join(root, "ai/bin/2026-11-18-demarrage/demarrage.md"))).toBe(true);
+  });
+
+  test("garde le démarrage tant que le Socle, l'objectif ou gitignore.projet l'attendent", () => {
+    writeFileSync(join(root, "ai/demarrage.md"), "# Démarrage\n");
+    expect(finishStart(root, NOW)).toBe("");
+    writeFileSync(join(root, "ai/00-objectifs.md"), "### O-1\n");
+    writeFileSync(join(root, "gitignore.projet"), "ai/\n");
+    expect(finishStart(root, NOW)).toBe("");
+    rmSync(join(root, "gitignore.projet"));
+    writeFileSync(join(root, "CLAUDE.md"), "- Stack : <à remplir>\n");
+    expect(finishStart(root, NOW)).toBe("");
+    expect(existsSync(join(root, "ai/demarrage.md"))).toBe(true);
   });
 
   test("relève les erreurs déjà présentes", async () => {

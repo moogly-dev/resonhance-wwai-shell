@@ -58,9 +58,24 @@ const SCOPES = ["projet", "secondaire"];
 const MAX_FACT = 800;
 const MAX_SESSION_LINE = 300;
 // Le Socle de CLAUDE.md attend l'utilisateur tant qu'il garde ce marqueur.
-const BLANK = "<à remplir";
+export const BLANK = "<à remplir";
 // Le parcours de démarrage d'une copie, retiré une fois achevé.
-const START = "ai/demarrage.md";
+export const START = "ai/demarrage.md";
+// Le .gitignore des projets, livré par le shell ; dans un projet, ce qui doit rester hors de git.
+export const SHELL_GITIGNORE = "gitignore.projet";
+const KEPT_OUT = ["ai", "CLAUDE.md", ".claude"];
+// Une faute de frappe (« .gitgnore ») crée un fichier que git ignore sans rien dire : deux lettres d'écart au plus.
+const TYPO_DISTANCE = 2;
+function distance(a: string, b: string) {
+  let previous = Array.from({ length: b.length + 1 }, (_, index) => index);
+  for (const [i, letter] of [...a].entries()) {
+    const current = [i + 1];
+    for (const [j, other] of [...b].entries()) current.push(Math.min(previous[j + 1] + 1, current[j] + 1, previous[j] + (letter === other ? 0 : 1)));
+    previous = current;
+  }
+  return previous[b.length];
+}
+const looksLikeGitignore = (name: string) => name !== ".gitignore" && distance(name.toLowerCase().replace(/^\./, ""), "gitignore") <= TYPO_DISTANCE;
 // CLAUDE.md et ses `@` entrent dans chaque message : au-delà, on réduit avant d'ajouter. Socle rempli et session en cours y tiennent.
 const CONTEXT_BUDGET = 14_000;
 // Sélection : est vivant ce qu'atteint une racine ; le reste, inemployé depuis EXTINCTION_DAYS, est candidat à l'extinction.
@@ -385,9 +400,19 @@ export function checkAi(root = ".", { now = new Date(), ledger = readLedger(root
     const blanks = claude.split(BLANK).length - 1;
     const start = exists(START) ? ` ; projet qui démarre : suivre ${START}` : "";
     if (blanks) warnings.push({ file: "CLAUDE.md", message: `${blanks} « à remplir » : le Socle attend l'utilisateur ; proposer chaque texte sous la forme avant -> après${start}` });
+    // Le shell lui-même garde gitignore.projet et un Socle vide ; un projet démarré n'a plus ni l'un ni l'autre.
+    if (!blanks && exists(SHELL_GITIGNORE)) warnings.push({ file: SHELL_GITIGNORE, message: "reste après le démarrage : le renommer en .gitignore (projet neuf) ou fusionner ses lignes « AI » dans .gitignore, puis le retirer" });
+    if (!exists(SHELL_GITIGNORE) && (exists(".gitignore") || exists(".git"))) {
+      const ignored = new Set((exists(".gitignore") ? read(".gitignore") : "").split("\n").map((line) => line.trim().replace(/^\/|\/$/g, "")));
+      const tracked = KEPT_OUT.filter((entry) => !ignored.has(entry));
+      if (tracked.length) errors.push({ file: ".gitignore", message: `n'exclut pas ${tracked.join(", ")} : l'outillage de Claude partirait dans git (lignes « AI » de gitignore.projet)` });
+    }
     const loaded = [...claude.matchAll(/^@(\S+)\s*$/gm)].map(([, file]) => file).filter(exists);
     context = [claude, ...loaded.map(read)].reduce((sum, text) => sum + text.length, 0);
     if (context > CONTEXT_BUDGET) warnings.push({ file: "CLAUDE.md", message: `contexte permanent : ${context} caractères (CLAUDE.md et ses @) pour un budget de ${CONTEXT_BUDGET} : réduire avant d'ajouter` });
+  }
+  for (const name of readdirSync(root).filter(looksLikeGitignore)) {
+    warnings.push({ file: name, message: "nom voisin de .gitignore, sans effet sur git : le renommer ou le retirer" });
   }
 
   return { errors, warnings: warnings.filter(({ file, message }, index) => warnings.findIndex((other) => other.file === file && other.message === message) === index), provisional, context };

@@ -2,10 +2,11 @@
 // Les réglages ne changent plus ; Claude fait évoluer ses automatisations ici, derrière la barrière de sécurité de check-ai.
 // Chaque traitement se tait quand il n'a rien d'utile à dire : une routine hors de propos coûte du contexte.
 
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { copyToBin } from "./ai-bin.mts";
 import { PURGED, purge } from "./ai-tmp.mts";
-import { type Finding, checkAi, formatReport } from "./check-ai.mts";
+import { BLANK, type Finding, SHELL_GITIGNORE, START, checkAi, formatReport } from "./check-ai.mts";
 import { GUARD_MESSAGE, fenceBreach, isForbidden } from "./guard-paths.mts";
 import { remind } from "./reminders.mts";
 import { WRITERS, count, readLedger, readSession, recordCall, writeLedger, writeSession } from "./usage.mts";
@@ -24,15 +25,30 @@ export const MEMORY: Record<string, string> = {
   "ai/improvements.md": "# improvements\n\n## NÉGATIF\n\n## POSITIF\n",
 };
 
+// Un démarrage achevé (Socle rempli, un objectif posé, gitignore.projet traité) ne sert plus : copié dans ai/bin, puis retiré.
+export function finishStart(root: string, now: Date) {
+  const read = (file: string) => (existsSync(join(root, file)) ? readFileSync(join(root, file), "utf8") : "");
+  if (!existsSync(join(root, START)) || existsSync(join(root, SHELL_GITIGNORE))) return "";
+  if (read("CLAUDE.md").includes(BLANK) || !/^### O-\d+/m.test(read("ai/00-objectifs.md"))) return "";
+  try {
+    const copy = copyToBin("demarrage", [START], root, now);
+    rmSync(join(root, START));
+    return `Démarrage achevé : ${START} retiré (copie dans ${copy.replaceAll("\\", "/")}).`;
+  } catch {
+    return "";
+  }
+}
+
 async function sessionStart(input: Input, root: string, now: Date): Promise<Outcome> {
   for (const [file, text] of Object.entries(MEMORY)) if (!existsSync(join(root, file))) writeFileSync(join(root, file), text);
   for (const { dir, maxAgeMs } of PURGED) await purge(join(root, dir), maxAgeMs, { nowMs: now.getTime() });
+  const finished = finishStart(root, now);
   const result = checkAi(root, { now });
   // Les erreurs déjà là ne sont pas celles du tour : la fin de tour ne bloque que sur les nouvelles.
   writeSession({ ...readSession(root, input.session_id), baseline: result.errors.map(keyOf), dirty: false }, root, input.session_id);
   // Après un résumé, CLAUDE.md est relu : seules les erreurs méritent d'y revenir.
-  if (input.source === "compact") return { stdout: result.errors.length ? `check:ai : ${result.errors.length} erreur(s) ; npm run check:ai pour le détail.` : "" };
-  return { stdout: formatReport(result) };
+  const report = input.source === "compact" ? (result.errors.length ? `check:ai : ${result.errors.length} erreur(s) ; npm run check:ai pour le détail.` : "") : formatReport(result);
+  return { stdout: [finished, report].filter(Boolean).join("\n") };
 }
 
 function preToolUse(input: Input, root: string, now: Date): Outcome {

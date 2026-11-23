@@ -484,3 +484,28 @@ describe("rapport", () => {
     expect(formatReport(many, true)).not.toContain("de plus");
   });
 });
+
+describe("démarrage et .gitignore", () => {
+  const AI_LINES = "node_modules/\n/ai/\nCLAUDE.md\n.claude/\n";
+
+  test("un projet dont le .gitignore laisse passer l'outillage de Claude : erreur", () => {
+    expect(check({ ".gitignore": "node_modules/\nai/\n" }).errors).toContain(".gitignore | n'exclut pas CLAUDE.md, .claude : l'outillage de Claude partirait dans git (lignes « AI » de gitignore.projet)");
+    expect(check({ ".gitignore": AI_LINES }).errors).toEqual([]);
+  });
+
+  test("le shell lui-même, avec gitignore.projet et un Socle vide : ni erreur ni reste", () => {
+    const shell = check({ ".gitignore": "node_modules/\n", "gitignore.projet": AI_LINES, "CLAUDE.md": "<à remplir>\n" });
+    expect(shell.errors).toEqual([]);
+    expect(shell.warnings.filter((line) => line.startsWith("gitignore.projet"))).toEqual([]);
+  });
+
+  test("Socle rempli et gitignore.projet encore là : signalé", () => {
+    expect(check({ "gitignore.projet": AI_LINES }).warnings).toContain("gitignore.projet | reste après le démarrage : le renommer en .gitignore (projet neuf) ou fusionner ses lignes « AI » dans .gitignore, puis le retirer");
+  });
+
+  test("une faute de frappe dans le nom : signalée, pas .ignore", () => {
+    const { warnings } = check({ ".gitignore": AI_LINES, ".gitgnore": AI_LINES, ".ignore": "!ai/\n" });
+    expect(warnings).toContain(".gitgnore | nom voisin de .gitignore, sans effet sur git : le renommer ou le retirer");
+    expect(warnings.filter((line) => line.startsWith(".ignore"))).toEqual([]);
+  });
+});

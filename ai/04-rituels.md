@@ -20,7 +20,7 @@ Commandes de l'application (base, migrations, mise en ligne…), selon le Socle.
 ### R-2
 
 - **Déclencheur :** Automatique : chaque événement que déclare `.claude/settings.json` (début de session, avant chaque outil, fin de tour)
-- **Commandes :** `.claude/settings.json` appelle `node ai/scripts/hook.mts` (testé par `ai/scripts/hook.test.mts`) pour chaque événement, et ne change plus ; l'événement reçu choisit le traitement (M-1). Début de session : purge (R-6), rapport de `ai/scripts/check-ai.mts`, réduit aux erreurs après un résumé, et relevé des erreurs déjà présentes. Fin de tour : contrôle seulement si Claude a écrit, blocage une seule fois et sur les seules erreurs nées pendant la session. Modifier : éditer `ai/scripts/hook.mts`. Retirer un événement : par l'utilisateur, dans `.claude/settings.json`, puis `/hooks`
+- **Commandes :** `.claude/settings.json` appelle `node ai/scripts/hook.mts` (testé par `ai/scripts/hook.test.mts`) pour chaque événement, et ne change plus ; l'événement reçu choisit le traitement (M-1). Début de session : mémoire de travail créée si absente, purge (R-6), retrait de `ai/demarrage.md` une fois le démarrage achevé (copie dans `ai/bin/`), rapport de `ai/scripts/check-ai.mts`, réduit aux erreurs après un résumé, et relevé des erreurs déjà présentes. Fin de tour : contrôle seulement si Claude a écrit, blocage une seule fois et sur les seules erreurs nées pendant la session. Modifier : éditer `ai/scripts/hook.mts`. Retirer un événement : par l'utilisateur, dans `.claude/settings.json`, puis `/hooks`
 - **Sélection :** essai jusqu'au 2026-12-11 ; mesure : blocages de fin de tour (`check-ai:blocage`) tous dus au tour, aucun rapport hors de propos signalé par l'utilisateur
 - **Statut :** provisoire
 
