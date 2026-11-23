@@ -69,6 +69,6 @@ Commandes de l'application (base, migrations, mise en ligne…), selon le Socle.
 ### R-9
 
 - **Déclencheur :** Automatique : avant chaque appel d'outil de Claude, seulement quand l'appel touche une règle
-- **Commandes :** `ai/scripts/hook.mts`, événement `PreToolUse`, par `ai/scripts/reminders.mts` (testé par `ai/scripts/reminders.test.mts`) : un rappel en contexte, sans bloquer, une fois par session et par sujet. Sas, quand naît un O, D, F ou Q absent du mini-hub ; autorité des sources, à la première recherche sur le web ou au premier lot de sources ; corbeille, avant de supprimer ou de déplacer dans `ai/`. Retirer un rappel : l'ôter de `reminders.mts`
+- **Commandes :** `ai/scripts/hook.mts`, événement `PreToolUse`, par `ai/scripts/reminders.mts` (testé par `ai/scripts/reminders.test.mts`) : un rappel en contexte, sans bloquer, une fois par session et par sujet. Sas, quand naît un O, D, F ou Q absent du mini-hub ; autorité des sources, à la première recherche sur le web ou au premier lot de sources ; sourcer, quand Claude écrit un objectif, une décision, une fonctionnalité ou le mini-hub sans avoir cherché sur le web de la session ; corbeille, avant de supprimer ou de déplacer dans `ai/`. Retirer un rappel : l'ôter de `reminders.mts`
 - **Sélection :** essai jusqu'au 2026-12-11 ; mesure : rappels donnés (`reminders:*`) suivis d'effet, aucun jugé hors de propos par l'utilisateur
 - **Statut :** provisoire

@@ -2,16 +2,19 @@
 
 Parcours de Claude au premier usage du shell dans un projet, signalé par `npm run check:ai` tant que le Socle de `CLAUDE.md` garde des « à remplir ». Dans le dépôt du shell lui-même, il ne s'applique pas.
 
-Claude mène : l'utilisateur n'a rien à lire. Une étape à la fois, dite en une phrase, cochée une fois faite. Les commandes sont données pour bash (Git Bash sous Windows) ; git, suppression et installation, l'utilisateur les lance, sauf s'il demande à Claude de le faire. Une fois tout coché : `npm run ai:bin -- demarrage ai/demarrage.md`, puis supprimer ce fichier.
+Claude mène : ni questionnaire, ni lecture imposée à l'utilisateur. Une fois le projet lancé (Socle rempli, premier objectif posé, installation faite) : `npm run ai:bin -- demarrage ai/demarrage.md`, puis supprimer ce fichier.
 
-- [ ] **Cas** : projet neuf (dépôt créé par « Use this template », ou shell cloné sans son `.git`) ou projet existant (son code, son `.git`, le shell cloné à côté en `../wwai-shell`). Un `.git` dont l'origine est le dépôt du shell se retire (`rm -rf .git`) ; le `.git` d'un projet existant ne se touche jamais.
-- [ ] **Git du projet** : projet neuf, `mv gitignore.projet .gitignore` ; projet existant, ajouter les lignes « AI » de `gitignore.projet` à son `.gitignore`, puis retirer `gitignore.projet`. `CLAUDE.md`, `ai/`, `.claude/`, `context/` et `.ignore` sortent ainsi de git ; déjà suivis (dépôt créé par le template), ils en sortent aussi par `git rm -r --cached CLAUDE.md ai .claude .ignore`, sans être supprimés du disque.
-- [ ] **Fusion (projet existant)** : ce que la copie a sauté parce qu'il existait déjà (`CLAUDE.md`, `.claude/settings.json`, `vitest.config.mts`) se fusionne depuis `../wwai-shell` ; `package.json` reçoit les scripts `check:ai`, `ai:bin`, `ai:apply`, `ai:tmp` et les devDependencies `vitest` et `@types/node` aux versions du shell, et son script de test lance aussi `ai/scripts/`. Puis `rm -rf ../wwai-shell`.
-- [ ] **Outillage** : nom du projet dans `package.json` (projet neuf) ; `npm install`, `npm run check:ai`, `npm test` ; sous Windows, `npm test` depuis `/D/…`, lettre de lecteur en majuscule, sinon Vitest échoue.
-- [ ] **Réglages de Claude** : proposer, sans l'imposer, les réglages globaux de `docs/claude-settings.md` : ce qu'ils changent en trois lignes, et le bloc à coller.
-- [ ] **Socle** : une question à la fois, dans l'ordre du Socle (problème, solution, but, problématiques, puis nature, stack, données, textes, git, ordre de développement, sauvegarde) ; chaque réponse revient sous la forme avant -> après, dans les mots de l'utilisateur, et il l'applique.
-- [ ] **Stack** : `CODE_DIRS` de `ai/scripts/check-ai.mts` et la section build du `.gitignore` réglés selon le Socle.
-- [ ] **Premier objectif** : inscrit en ENTRÉE de `ai/mini-hub.md`, validé, puis posé dans `ai/00-objectifs.md` avec sa mesure.
-- [ ] **Fichiers du shell (projet neuf)** : le README de l'application remplace celui du shell ; `LICENSE` et `docs/claude-settings.md` gardés ou retirés selon l'utilisateur ; la convention de commits de `docs/` reste, `CLAUDE.md` la cite.
-- [ ] **Premier commit** : `git init` si le projet n'a pas de `.git`, puis le commit, sans attribution ; le dépôt distant, si l'utilisateur en veut un et n'en a pas déjà.
-- [ ] **Retours** : chaque friction de ce démarrage va dans `ai/improvements.md`.
+1. **Une seule question** : « Quel est ton projet ? » Rien d'autre avant sa réponse.
+2. **Sourcer aussitôt, dans le même tour** : à partir de la réponse, chercher sur le web la plus haute autorité de chaque point en jeu (documentation officielle des cadres, API et plateformes visées dans leur version actuelle, normes, textes de loi dès qu'il y a des données personnelles) et comparer les stacks possibles sur ces sources. Ce qui fonde une proposition se garde en S-n par `npm run ai:apply`. Aucune stack ni aucun objectif proposé sans ces sources.
+3. **Proposer d'un bloc** : le Socle rempli sous la forme avant -> après (les mots de l'utilisateur pour ce qu'il a dit ; le reste marqué comme proposition de Claude, avec sa source), une stack recommandée et une ou deux alternatives, le premier objectif avec sa mesure. Ensuite, itérer naturellement sur ses réponses ; une question seulement quand un choix lui revient.
+4. **Le mini-hub, dit au premier passage**, en une phrase : « `ai/mini-hub.md` est la salle d'attente : j'y inscris ce que je propose de créer ou de retirer (objectif, décision, fonctionnalité, question), et rien n'est appliqué sans ton accord. » Le premier objectif y entre, puis va dans `ai/00-objectifs.md` une fois validé.
+5. **Installer en coulisse**, une fois la stack validée ; ce que l'utilisateur doit lancer (git, suppression, installation, sauf s'il confie git à Claude) lui est donné en un seul bloc :
+   - projet neuf (« Use this template », ou clone sans `.git`) ou existant (son code, son `.git`, le shell cloné en `../wwai-shell`) ; un `.git` dont l'origine est le dépôt du shell se retire, celui d'un projet existant ne se touche jamais ;
+   - neuf : `mv gitignore.projet .gitignore` ; existant : ses lignes « AI » ajoutées au `.gitignore`, puis `gitignore.projet` retiré ; déjà suivis (template), `git rm -r --cached CLAUDE.md ai .claude .ignore` ;
+   - existant : `CLAUDE.md`, `.claude/settings.json` et `vitest.config.mts` fusionnés depuis `../wwai-shell` ; `package.json` reçoit les scripts `check:ai`, `ai:bin`, `ai:apply`, `ai:tmp`, les devDependencies `vitest` et `@types/node`, et son test lance aussi `ai/scripts/` ; puis `rm -rf ../wwai-shell` ;
+   - nom du projet dans `package.json`, outil de création de la stack, `npm install`, `npm run check:ai`, `npm test` (sous Windows, depuis `/D/…`, lettre de lecteur en majuscule) ;
+   - `CODE_DIRS` de `ai/scripts/check-ai.mts` et la section build du `.gitignore` selon la stack ;
+   - projet neuf : README de l'application à la place de celui du shell ; `LICENSE` et `docs/claude-settings.md` gardés ou retirés selon l'utilisateur, la convention de commits de `docs/` reste ;
+   - `git init` s'il n'y a pas de `.git`, premier commit sans attribution, dépôt distant si l'utilisateur en veut un ;
+   - en une ligne, les réglages globaux recommandés de `docs/claude-settings.md`, à prendre ou non.
+6. **Retours** : chaque friction de ce démarrage va dans `ai/improvements.md`.
