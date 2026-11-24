@@ -221,20 +221,20 @@ describe("registre des automatisations", () => {
   const missing = "automatisation absente de ai/04-rituels.md : inscris son déclencheur, sa commande et comment la retirer";
 
   test.each([
-    ["script de l'app", "scripts/outil.mts"],
-    ["script shell", "scripts/outil.sh"],
     ["script de Claude", "ai/scripts/outil.mts"],
+    ["script shell de Claude", "ai/scripts/outil.sh"],
     ["hooks", ".claude/settings.json"],
   ])("%s absent du registre : erreur", (_, file) => {
     expect(check({ [file]: "\n" }).errors).toContain(`${file} | ${missing}`);
   });
 
-  test("inscrits au registre, et test exclu : aucune erreur", () => {
+  test("inscrits au registre, test exclu, et scripts de l'application libres : aucune erreur", () => {
     const changes = {
-      "scripts/outil.mts": "\n",
-      "scripts/outil.test.mts": "\n",
+      "ai/scripts/outil.mts": "\n",
+      "ai/scripts/outil.test.mts": "\n",
+      "scripts/seed.sh": "\n",
       ".claude/settings.json": "{}\n",
-      "ai/04-rituels.md": `${VALID["ai/04-rituels.md"]}Voir \`scripts/outil.mts\` et \`.claude/settings.json\`.\n`,
+      "ai/04-rituels.md": `${VALID["ai/04-rituels.md"]}Voir \`ai/scripts/outil.mts\` et \`.claude/settings.json\`.\n`,
     };
     expect(check(changes).errors).toEqual([]);
   });
@@ -424,7 +424,6 @@ describe("barrière de sécurité des scripts de Claude", () => {
     const changes = {
       "scripts/outil.mts": 'await fetch("https://exemple.org");\n',
       "ai/scripts/outil.test.mts": 'import { exec } from "node:child_process";\n',
-      "ai/04-rituels.md": `${headed("R-1")}\`scripts/outil.mts\`\n`,
     };
     expect(check(changes).errors).toEqual([]);
   });
@@ -441,9 +440,9 @@ describe("sélection", () => {
     expect(found[0]).toMatch(/inemployé depuis \d+ j : candidat à l'extinction \(à retirer par Claude, après npm run ai:bin\)$/);
   });
 
-  test("une décision que rien n'atteint sort par le sas", () => {
+  test("une décision que rien n'atteint est proposée au retrait à l'utilisateur", () => {
     const found = candidates(check({ "ai/01-decisions.md": `${headed("D-1")}${headed("D-2")}` }, { now: later }).warnings);
-    expect(found.some((warning) => warning.startsWith("ai/01-decisions.md | D-2 :") && warning.endsWith("(SORTIE dans ai/mini-hub.md)"))).toBe(true);
+    expect(found.some((warning) => warning.startsWith("ai/01-decisions.md | D-2 :") && warning.endsWith("(à proposer au retrait à l'utilisateur)"))).toBe(true);
   });
 
   test("un emploi récent, mesuré par le registre d'usage, garde en vie", () => {
@@ -485,6 +484,11 @@ describe("rapport", () => {
   });
 });
 
+test("dans le code, seul un commentaire cite un élément : une chaîne d'un projet existant n'est pas un renvoi", () => {
+  expect(check({ "lib/report.ts": 'const quarter = "Q-1";\nconst code = "D-99";\n' }).errors).toEqual([]);
+  expect(check({ "lib/report.ts": "const total = 1; // D-99\n" }).errors).toContain("lib/report.ts | renvoi orphelin : D-99 (l. 1)");
+});
+
 test("un nom de paquet qui finit par -ai/ n'est pas un chemin", () => {
   expect(check({ "CLAUDE.md": 'import Anthropic from "@anthropic-ai/sdk";\n' }).errors).toEqual([]);
 });
@@ -492,9 +496,9 @@ test("un nom de paquet qui finit par -ai/ n'est pas un chemin", () => {
 describe("démarrage et .gitignore", () => {
   const AI_LINES = "node_modules/\n/ai/\nCLAUDE.md\n.claude/\n";
 
-  test("un projet dont le .gitignore laisse passer l'outillage de Claude : erreur", () => {
-    expect(check({ ".gitignore": "node_modules/\nai/\n" }).errors).toContain(".gitignore | n'exclut pas CLAUDE.md, .claude : l'outillage de Claude partirait dans git (lignes « AI » de gitignore.projet)");
-    expect(check({ ".gitignore": AI_LINES }).errors).toEqual([]);
+  test("un projet dont le .gitignore laisse passer l'outillage de Claude : signalé", () => {
+    expect(check({ ".gitignore": "node_modules/\nai/\n" }).warnings).toContain(".gitignore | n'exclut pas CLAUDE.md, .claude : l'outillage de Claude partirait dans git, sauf choix de l'équipe de le versionner (lignes « AI » de gitignore.projet)");
+    expect(check({ ".gitignore": AI_LINES }).warnings.filter((line) => line.startsWith(".gitignore"))).toEqual([]);
   });
 
   test("le shell lui-même, avec gitignore.projet et un Socle vide : ni erreur ni reste", () => {

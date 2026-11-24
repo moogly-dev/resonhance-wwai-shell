@@ -32,7 +32,7 @@ describe("début de session", () => {
   test("crée la mémoire de travail absente, sans toucher à celle qui existe", async () => {
     await run({ hook_event_name: "SessionStart", source: "startup" });
     expect(readFileSync(join(root, "ai/session.md"), "utf8")).toBe("# Session\n");
-    expect(readFileSync(join(root, "ai/mini-hub.md"), "utf8")).toBe(MEMORY["ai/mini-hub.md"]);
+    expect(readFileSync(join(root, "ai/improvements.md"), "utf8")).toBe(MEMORY["ai/improvements.md"]);
   });
 
   test("retire le démarrage une fois achevé, copie gardée dans ai/bin", async () => {

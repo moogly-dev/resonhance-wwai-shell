@@ -55,7 +55,7 @@ Commandes de l'application (base, migrations, mise en ligne…), selon le Socle.
 ### R-7
 
 - **Déclencheur :** Après toute modification d'un script de `ai/scripts/`, par Claude
-- **Commandes :** `npm run lint:ai` (types des scripts, par `ai/scripts/tsconfig.json`), puis `cd /D/<chemin du projet> && npm test` — aucune erreur de types ; les tests des scripts (`ai/scripts/*.test.mts`) passent tous ; un comportement nouveau arrive avec son test. Lettre de lecteur en majuscule : depuis `/d/…`, Vitest se charge deux fois et échoue (« Cannot read properties of undefined (reading 'config') »), vérifié le 2026-11-18
+- **Commandes :** `npm run lint:ai` (types des scripts, par `ai/scripts/tsconfig.json`), puis `cd /D/<chemin du projet> && npm run test:ai` (par `ai/scripts/vitest.config.mts`, à part des tests de l'application) — aucune erreur de types ; les tests des scripts (`ai/scripts/*.test.mts`) passent tous ; un comportement nouveau arrive avec son test. Lettre de lecteur en majuscule : depuis `/d/…`, Vitest se charge deux fois et échoue (« Cannot read properties of undefined (reading 'config') »), vérifié le 2026-11-18
 - **Sélection :** retenu le 2026-11-18 : éprouvé sur Resonhance
 - **Statut :** provisoire
 
@@ -69,8 +69,15 @@ Commandes de l'application (base, migrations, mise en ligne…), selon le Socle.
 ### R-9
 
 - **Déclencheur :** Automatique : avant chaque appel d'outil de Claude, seulement quand l'appel touche une règle
-- **Commandes :** `ai/scripts/hook.mts`, événement `PreToolUse`, par `ai/scripts/reminders.mts` (testé par `ai/scripts/reminders.test.mts`) : un rappel en contexte, sans bloquer, une fois par session et par sujet. Sas, quand naît un O, D, F ou Q absent du mini-hub ; autorité des sources, à la première recherche sur le web ou au premier lot de sources ; sourcer, quand Claude écrit un objectif, une décision, une fonctionnalité ou le mini-hub sans avoir cherché sur le web de la session ; économie, à la lecture d'une image, d'un fichier lourd ou d'un outil déclaré lourd (R-10) ; corbeille, avant de supprimer ou de déplacer dans `ai/`. Retirer un rappel : l'ôter de `reminders.mts`
+- **Commandes :** `ai/scripts/hook.mts`, événement `PreToolUse`, par `ai/scripts/reminders.mts` (testé par `ai/scripts/reminders.test.mts`) : un rappel en contexte, sans bloquer, une fois par session et par sujet. Autorité des sources, à la première recherche sur le web ou au premier lot de sources ; sourcer, quand Claude écrit un objectif, une décision, ou une fonctionnalité sans avoir cherché sur le web de la session ; économie, à la lecture d'une image, d'un fichier lourd ou d'un outil déclaré lourd (R-10) ; corbeille, avant de supprimer ou de déplacer dans `ai/`. Retirer un rappel : l'ôter de `reminders.mts`
 - **Sélection :** essai jusqu'au 2026-12-11 ; mesure : rappels donnés (`reminders:*`) suivis d'effet, aucun jugé hors de propos par l'utilisateur
+- **Statut :** provisoire
+
+### R-11
+
+- **Déclencheur :** Une fois, par l'utilisateur, pour brancher le shell sur un projet existant (README)
+- **Commandes :** depuis la racine du projet, `node ../wwai-shell/ai/scripts/install.mts` (`ai/scripts/install.mts`, testé par `ai/scripts/install.test.mts`) : copie `ai/` sans ce qui naît à l'usage ; s'arrête sans rien toucher si le projet a déjà un `ai/` ou un `package.json` illisible ; n'écrase rien : un fichier déjà présent garde son contenu et la version du shell attend dans `ai/fusion/`, les JSON ne reçoivent que des clés absentes, `.gitignore` et `.ignore` que des lignes en fin de fichier. Retirer : supprimer le script et son test
+- **Sélection :** essai jusqu'au 2026-12-24 ; mesure : installations faites sans perte, retour de l'utilisateur du 2026-11-24 (« vérifie qu'un utilisateur qui branche le shell sur un projet existant ne détruise ni ne remplace l'existant »)
 - **Statut :** provisoire
 
 ### R-10

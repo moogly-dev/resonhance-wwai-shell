@@ -8,6 +8,7 @@ import { copyToBin } from "./ai-bin.mts";
 import { PURGED, purge } from "./ai-tmp.mts";
 import { BLANK, type Finding, SHELL_GITIGNORE, START, checkAi, formatReport } from "./check-ai.mts";
 import { oversizedRead } from "./economy.mts";
+import { FUSION } from "./install.mts";
 import { GUARD_MESSAGE, fenceBreach, isForbidden, promptTrap } from "./guard-paths.mts";
 import { remind } from "./reminders.mts";
 import { WRITERS, count, readLedger, readSession, recordCall, writeLedger, writeSession } from "./usage.mts";
@@ -22,14 +23,13 @@ const dayOf = (now: Date) => now.toLocaleDateString("sv");
 // Mémoire de travail chargée par CLAUDE.md : hors de git, elle naît vide à la première session d'une copie.
 export const MEMORY: Record<string, string> = {
   "ai/session.md": "# Session\n\nTâche :\nTon :\n\n## Validé\n\n## En cours\n\n## En attente\n\n## Doutes\n",
-  "ai/mini-hub.md": "# mini-hub\n\n## ENTRÉE\n\n## SORTIE\n",
   "ai/improvements.md": "# improvements\n\n## NÉGATIF\n\n## POSITIF\n",
 };
 
-// Un démarrage achevé (Socle rempli, un objectif posé, gitignore.projet traité) ne sert plus : copié dans ai/bin, puis retiré.
+// Un démarrage achevé (Socle rempli, un objectif posé, gitignore.projet traité, ai/fusion/ vidé) ne sert plus : copié dans ai/bin, puis retiré.
 export function finishStart(root: string, now: Date) {
   const read = (file: string) => (existsSync(join(root, file)) ? readFileSync(join(root, file), "utf8") : "");
-  if (!existsSync(join(root, START)) || existsSync(join(root, SHELL_GITIGNORE))) return "";
+  if (!existsSync(join(root, START)) || existsSync(join(root, SHELL_GITIGNORE)) || existsSync(join(root, FUSION))) return "";
   if (read("CLAUDE.md").includes(BLANK) || !/^### O-\d+/m.test(read("ai/00-objectifs.md"))) return "";
   try {
     const copy = copyToBin("demarrage", [START], root, now);

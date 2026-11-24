@@ -33,20 +33,27 @@ const REFERENCE = /\b([DFQRSOPUCGTM])-(\d+)\b/g;
 const RULE_REFERENCE = /\b(F-\d+) R(\d+)\b/g;
 // Un chemin de ai/ ne suit ni lettre ni tiret : « @anthropic-ai/sdk » est un nom de paquet, pas un chemin.
 const PATH = /(?<![\w-])ai\/([\w.-]+(?:\/[\w.-]+)*)/g;
-// `ai/bin/`, `ai/tmp/` et le registre d'usage naissent à l'usage : un renvoi vers eux n'a pas à exister.
-const DISPOSABLE = /^(?:bin|tmp)(?:\/|$)|^claude\/usage\.json$/;
+// `ai/bin/`, `ai/tmp/`, `ai/fusion/` et le registre d'usage naissent à l'usage : un renvoi vers eux n'a pas à exister.
+const DISPOSABLE = /^(?:bin|tmp|fusion)(?:\/|$)|^claude\/usage\.json$/;
 // Un numéro de fichier seul (« en 05 ») change de sens quand les fichiers changent : on cite le nom.
 const BARE_FILE_NUMBER = /(?<![\w:/.,-])0\d(?![\w:/-]|\.\w)/g;
 const HOOKS = ".claude/settings.json";
 const PROVISIONAL = /PROVISOIRE \(([^)]*\d[^)]*)\)/;
 // Scripts de l'app (`scripts/`) et de Claude (`ai/scripts/`) : chacun s'inscrit au registre.
-const SCRIPT_DIRS = ["scripts", "ai/scripts"];
+// Seuls les scripts de Claude s'inscrivent au registre ; ceux de l'application appartiennent à son équipe.
+const SCRIPT_DIRS = ["ai/scripts"];
 const SCRIPT_FILE = /\.(?:mts|mjs|ts|js|sh)$/;
 // Dossiers de code dont les renvois sont contrôlés, à ajuster à la stack du Socle ; un dossier absent est ignoré.
-const CODE_DIRS = ["app", "components", "lib", "src", "migrations", "tests", ...SCRIPT_DIRS];
+const CODE_DIRS = ["app", "components", "lib", "src", "migrations", "tests", "scripts", ...SCRIPT_DIRS];
 const CODE_FILE = /\.(?:[cm]?[jt]sx?|css|sql)$/;
 // Les tests des scripts de Claude citent des numéros et des chemins inventés : leurs renvois ne valent rien.
 const isToolTest = (file: string) => file.startsWith("ai/scripts/") && file.includes(".test.");
+// Le code cite ses éléments en commentaire : une chaîne ou un identifiant du projet (un trimestre, un code produit) n'est pas un renvoi.
+const COMMENT = /\/\/|\/\*|<!--|\{\/\*|(?:^|\s)#\s|^\s*\*|(?:^|\s)--\s/;
+const commentOf = (line: string) => {
+  const at = line.search(COMMENT);
+  return at < 0 ? "" : line.slice(at);
+};
 // Familles qu'un élément peut citer (CLAUDE.md, « Renvois ») : ce qui le fonde et sa question.
 const MAY_CITE: Record<string, string> = { D: "DOSQ", F: "DFOSQ", S: "S", M: "M" };
 // Les sources de Claude (M) ne servent que son outillage : aucun élément du projet ne les cite.
@@ -287,8 +294,10 @@ export function checkAi(root = ".", { now = new Date(), ledger = readLedger(root
   const isActive = (id: string) => items.get(id)?.header.status === "actif" || /\*\*Statut :\*\* actif/.test(items.get(id)?.text ?? "");
 
   for (const file of [...artefacts, ...code]) {
+    const scan = code.includes(file) ? commentOf : (line: string) => line;
     read(file)
       .split("\n")
+      .map(scan)
       .forEach((line, index) => {
         const at = `(l. ${index + 1})`;
         for (const id of ids(line)) {
@@ -314,7 +323,7 @@ export function checkAi(root = ".", { now = new Date(), ledger = readLedger(root
   // Le code d'un élément non actif est un essai : il le dit et se relie à ses éléments, pour la session suivante. Une source n'a pas de statut.
   const provisional: { file: string; items: string }[] = [];
   for (const file of code) {
-    const text = read(file);
+    const text = read(file).split("\n").map(commentOf).join("\n");
     const marker = text.match(PROVISIONAL)?.[1];
     if (marker) {
       provisional.push({ file, items: marker });
@@ -368,7 +377,7 @@ export function checkAi(root = ".", { now = new Date(), ledger = readLedger(root
   const living = new Set<string>();
   const reached = [
     ...[...items].filter(([id, { header }]) => ROOT_FAMILIES.includes(id[0]) || (id.startsWith("F-") && header.scope === "projet")).map(([id]) => id),
-    ...["CLAUDE.md", "ai/session.md", "ai/mini-hub.md", "ai/improvements.md"].filter(exists).flatMap((file) => ids(read(file))),
+    ...["CLAUDE.md", "ai/session.md", "ai/improvements.md"].filter(exists).flatMap((file) => ids(read(file))),
     ...code.flatMap((file) => ids(read(file))),
   ];
   while (reached.length) {
@@ -381,7 +390,7 @@ export function checkAi(root = ".", { now = new Date(), ledger = readLedger(root
   for (const [id, { file }] of items) {
     if (!MORTAL_FAMILIES.includes(id[0]) || living.has(id)) continue;
     const idle = daysBetween(Math.max(statSync(join(root, file)).mtimeMs, Date.parse(ledger.files[file]?.last ?? "") || 0), now);
-    const exit = "SM".includes(id[0]) ? "à retirer par Claude, après npm run ai:bin" : "SORTIE dans ai/mini-hub.md";
+    const exit = "SM".includes(id[0]) ? "à retirer par Claude, après npm run ai:bin" : "à proposer au retrait à l'utilisateur";
     if (idle > EXTINCTION_DAYS) warnings.push({ file, message: `${id} : aucun élément vivant ne le cite, inemployé depuis ${idle} j : candidat à l'extinction (${exit})` });
   }
 
@@ -399,19 +408,20 @@ export function checkAi(root = ".", { now = new Date(), ledger = readLedger(root
     const claude = read("CLAUDE.md");
     // Le Socle se remplit par l'utilisateur : tant qu'il garde des blancs, le projet n'a pas sa base.
     const blanks = claude.split(BLANK).length - 1;
-    const start = exists(START) ? ` ; projet qui démarre : suivre ${START}` : "";
-    if (blanks) warnings.push({ file: "CLAUDE.md", message: `${blanks} « à remplir » : le Socle attend l'utilisateur ; proposer chaque texte sous la forme avant -> après${start}` });
+    if (blanks) warnings.push({ file: "CLAUDE.md", message: `${blanks} « à remplir » : le Socle attend l'utilisateur ; proposer chaque texte sous la forme avant -> après` });
     // Le shell lui-même garde gitignore.projet et un Socle vide ; un projet démarré n'a plus ni l'un ni l'autre.
     if (!blanks && exists(SHELL_GITIGNORE)) warnings.push({ file: SHELL_GITIGNORE, message: "reste après le démarrage : le renommer en .gitignore (projet neuf) ou fusionner ses lignes « AI » dans .gitignore, puis le retirer" });
     if (!exists(SHELL_GITIGNORE) && (exists(".gitignore") || exists(".git"))) {
       const ignored = new Set((exists(".gitignore") ? read(".gitignore") : "").split("\n").map((line) => line.trim().replace(/^\/|\/$/g, "")));
       const tracked = KEPT_OUT.filter((entry) => !ignored.has(entry));
-      if (tracked.length) errors.push({ file: ".gitignore", message: `n'exclut pas ${tracked.join(", ")} : l'outillage de Claude partirait dans git (lignes « AI » de gitignore.projet)` });
+      if (tracked.length) warnings.push({ file: ".gitignore", message: `n'exclut pas ${tracked.join(", ")} : l'outillage de Claude partirait dans git, sauf choix de l'équipe de le versionner (lignes « AI » de gitignore.projet)` });
     }
     const loaded = [...claude.matchAll(/^@(\S+)\s*$/gm)].map(([, file]) => file).filter(exists);
     context = [claude, ...loaded.map(read)].reduce((sum, text) => sum + text.length, 0);
     if (context > CONTEXT_BUDGET) warnings.push({ file: "CLAUDE.md", message: `contexte permanent : ${context} caractères (CLAUDE.md et ses @) pour un budget de ${CONTEXT_BUDGET} : réduire avant d'ajouter` });
   }
+  // Un projet existant n'a pas de Socle vide : le parcours de démarrage se signale tant qu'il est là.
+  if (exists(START)) warnings.push({ file: START, message: "démarrage en cours : le suivre avant toute autre tâche" });
   for (const name of readdirSync(root).filter(looksLikeGitignore)) {
     warnings.push({ file: name, message: "nom voisin de .gitignore, sans effet sur git : le renommer ou le retirer" });
   }

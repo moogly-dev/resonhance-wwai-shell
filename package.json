@@ -7,7 +7,8 @@
     "node": ">=24.2"
   },
   "scripts": {
-    "test": "vitest run",
+    "test": "npm run test:ai",
+    "test:ai": "vitest run --config ai/scripts/vitest.config.mts",
     "check:ai": "node ai/scripts/check-ai.mts",
     "ai:bin": "node ai/scripts/ai-bin.mts",
     "ai:apply": "node ai/scripts/ai-apply.mts",
