@@ -1,85 +1,86 @@
-# Workflow IA
+# AI workflow
 
-## Toujours chargé
+## Always loaded
 
 @ai/session.md
 @ai/improvements.md
 
-- Rien ne porte la mention de Claude ni d'Anthropic (pas de ligne « Co-Authored-By », pas de signature).
-- Tu ne modifies jamais CLAUDE.md : toute règle ou correction est retournée en conversation, sous la forme avant -> après, et l'utilisateur l'applique.
-- Aucune valeur secrète (mot de passe, token, URL de connexion) n'est inscrite : seulement le nom de la variable.
-- Rien dans AppData ni hors du projet : le jetable de Claude va dans `ai/tmp/claude/` (purgé après 24 h, la racine de `ai/tmp/` est à l'utilisateur), un traitement récurrent devient un script de `ai/scripts/` ; la mémoire de Claude est `ai/`, jamais la mémoire automatique hors du projet.
-- Un fichier d'une implémentation de CLAUDE et non de l'application hors `ai/` se signale pour exclusion du `.gitignore`.
-- Les documents de `context/` sont des prémices non officielles, à consulter sur demande seulement.
+- Language: everything in the repository is written in English (code, comments, commits, `ai/` artefacts); Claude answers the user in the user's language, and quotes their words as they wrote them.
+- Nothing mentions Claude or Anthropic (no "Co-Authored-By" line, no signature).
+- You never edit CLAUDE.md unless the user asks: any rule or correction is returned in the conversation, as before -> after, and the user applies it.
+- No secret value (password, token, connection URL) is written: only the variable's name.
+- Nothing in AppData nor outside the project: Claude's disposable files go in `ai/tmp/claude/` (purged after 24 h, the root of `ai/tmp/` belongs to the user), a recurring task becomes a script in `ai/scripts/`; Claude's memory is `ai/`, never the automatic memory outside the project.
+- A file of Claude's tooling rather than of the application, outside `ai/`, is flagged for exclusion in `.gitignore`.
+- The documents in `context/` are unofficial premises, to read on request only.
 
-## Artefacts `ai/`
+## `ai/` artefacts
 
-Ordre de décision : conversation et `## Socle` → `ai/00-objectifs.md` (O, la vision du projet) → `ai/01-decisions.md` (D) → `ai/features/` (F).
+Order of authority: conversation and `## Foundation` → `ai/00-objectives.md` (O, the vision of the project) → `ai/01-decisions.md` (D) → `ai/features/` (F).
 
-| Artefact                  | Id              | Il répond à                                                              |
-| ------------------------- | --------------- | ------------------------------------------------------------------------ |
-| `ai/00-objectifs.md`      | O-n             | Que doit atteindre le projet, et comment le mesurer ?                    |
-| `ai/01-decisions.md`      | D-n             | Quel choix engage plusieurs features, et qu'est-ce qu'il change ?        |
-| `ai/02-glossary.md`       | G-n             | Que veut dire ce mot ici ?                                               |
-| `ai/03-texts.md`          | T-n             | Quel texte attend d'entrer dans le code ?                                |
-| `ai/04-rituels.md`        | R-n             | Quelle commande ou quel rappel, à quel déclencheur ?                     |
-| `ai/05-code-guideline.md` | P-n, U-n, C-n   | Comment écrire le code et l'interface ?                                  |
-| `ai/features/`            | F-n, R<m>, A<m> | Que fait cette fonctionnalité, est-elle du projet, comment la vérifier ? |
-| `ai/issues/`              | Q-n             | Qu'est-ce qui reste à trancher ?                                         |
-| `ai/sources/`             | S-n             | Que sait-on, et d'où cela vient-il ?                                     |
-| `ai/claude/sources/`      | M-n             | Que sait Claude de ses outils et de sa méthode, et d'où ?                |
+| Artefact                  | Id              | It answers                                                         |
+| ------------------------- | --------------- | ------------------------------------------------------------------ |
+| `ai/00-objectives.md`     | O-n             | What must the project achieve, and how is it measured?             |
+| `ai/01-decisions.md`      | D-n             | Which choice commits several features, and what does it change?   |
+| `ai/02-glossary.md`       | G-n             | What does this word mean here?                                     |
+| `ai/03-texts.md`          | T-n             | Which text is waiting to enter the code?                           |
+| `ai/04-rituals.md`        | R-n             | Which command or reminder, at which trigger?                       |
+| `ai/05-code-guideline.md` | P-n, U-n, C-n   | How to write the code and the interface?                           |
+| `ai/features/`            | F-n, R<m>, A<m> | What does this feature do, is it in scope, how to verify it?       |
+| `ai/issues/`              | Q-n             | What remains to settle?                                            |
+| `ai/sources/`             | S-n             | What do we know, and where does it come from?                      |
+| `ai/claude/sources/`      | M-n             | What does Claude know of its tools and method, and where from?     |
 
-- Chaque dossier de fiches s'ouvre par son `INDEX.md` : le lire d'abord, puis seulement la fiche visée.
-- `actif` = en production, rien d'autre ; le reste est `provisoire` et ne revient à l'utilisateur que s'il ouvre le sujet.
-- Accord : créer, supprimer ou déclasser un O, D, F ou Q se propose dans la conversation, avec sa raison, et ne s'écrit qu'une fois accepté par l'utilisateur. Sources, recherches et corrections de renvois passent directement.
-- Les mots de l'utilisateur vont dans l'élément qu'ils fondent : énoncé d'un objectif, raison d'une décision, énoncé d'une question.
-- Une décision engage un choix et dit ce qu'il change ; jamais la redite d'un objectif.
-- Un changement de ligne se traduit par le `scope` des fiches (`projet` | `secondaire`), jamais par une décision qui déclasse.
-- Sélection : avant de créer, chercher l'élément qui porte déjà l'information. Ce que Claude crée entre à l'essai et ne reste que par l'usage mesuré (`ai/claude/usage.json`) ; ce qu'aucun élément vivant n'atteint et que personne n'emploie depuis le seuil de `npm run check:ai` sort, sources et outillage par Claude, O, D, F et Q par l'utilisateur.
-- Sources : avant de proposer une stack, un objectif, une décision ou une fonctionnalité, Claude cherche aussitôt sur le web la plus haute autorité du domaine (rangs de `ai/sources/INDEX.md`) et la cite ; un rang 3 n'est qu'une piste, à remonter jusqu'à sa source primaire, et ne fonde seul aucune décision. Ce qui ne sert que Claude va dans `ai/claude/sources/`, que rien du projet ne cite.
-- Renvois : identifiant complet (`F-n R<m>`) ou chemin, jamais un numéro de fichier seul. Un élément cite ce qui le fonde, jamais ce qui dépend de lui ; une question et ses éléments se citent mutuellement ; une source ne cite aucun élément du projet. Un fichier de code ne cite un élément non actif que s'il commence par `// PROVISOIRE (F-n R<m>)`.
-- Formats : modèles `ai/modeles/feature.md`, `ai/modeles/question.md`, `ai/modeles/source.md` ; chaque fichier numéroté donne le sien en tête. Une question adressée est supprimée après avoir étayé ses éléments.
-- `npm run check:ai` vérifie formats, renvois, index, sources et sélection : il doit finir sans erreur avant de présenter.
-- ai/ est hors de git : npm run ai:bin -- <sujet> [chemins] avant de supprimer ou de modifier plusieurs fichiers ; un lot passe par npm run ai:apply, qui retire le lot de ai/tmp/ une fois appliqué. ai/bin/ garde seul ses 10 copies les plus récentes : un filet, pas une archive.
-- `ai/session.md` porte la tâche en cours dans les mots de l'utilisateur : étapes validées (10 au plus), point en cours, points en attente, doutes, et le ton de l'échange (humeur, posture, forme attendue). Une ligne par élément, remplacée ; relu après tout résumé, vidé à la fin de la tâche.
-- `ai/improvements.md` : ce que Claude remarque et que seul l'utilisateur peut appliquer pour le rendre plus efficace (règle de CLAUDE.md, rangement de fichiers, outillage, tokens dépensés sans besoin) ; en NÉGATIF le problème et sa solution, en POSITIF l'amélioration. Claude l'inscrit sans en parler ; ce qu'il peut appliquer lui-même, il l'applique et ne l'inscrit pas. À trois items, le dire en une phrase, au moment qui s'y prête.
+- Each card folder opens with its `INDEX.md`: read it first, then only the target card.
+- `active` = in production, nothing else; the rest is `provisional` and only comes back to the user if they open the subject.
+- Agreement: creating, deleting or downgrading an O, D, F or Q is proposed in the conversation, with its reason, and only written once accepted by the user. Sources, searches and reference fixes go directly.
+- The user's words go into the item they ground: statement of an objective, reason of a decision, statement of a question.
+- A decision commits a choice and says what it changes; never a restatement of an objective.
+- A change of line shows in the cards' `scope` (`project` | `secondary`), never in a decision that downgrades.
+- Selection: before creating, look for the item that already carries the information. What Claude creates starts on trial and only stays through measured use (`ai/claude/usage.json`); what no living item reaches and nobody has used past the threshold of `npm run check:ai` leaves, sources and tooling by Claude, O, D, F and Q by the user.
+- Sources: before proposing a stack, an objective, a decision or a feature, Claude searches the web right away for the highest authority of the field (ranks of `ai/sources/INDEX.md`) and cites it; a rank 3 is only a lead, to trace back to its primary source, and alone grounds no decision. What only serves Claude goes in `ai/claude/sources/`, which nothing in the project cites.
+- References: full identifier (`F-n R<m>`) or path, never a bare file number. An item cites what grounds it, never what depends on it; a question and its items cite each other; a source cites no project item. A code file only cites a non-active item if it starts with `// PROVISIONAL (F-n R<m>)`.
+- Formats: templates `ai/templates/feature.md`, `ai/templates/question.md`, `ai/templates/source.md`; each numbered file gives its own at the top. An answered question is deleted after supporting its items.
+- `npm run check:ai` checks formats, references, indexes, sources and selection: it must finish without error before presenting.
+- `ai/` is out of the project's git: `npm run ai:bin -- <subject> [paths]` before deleting or changing several files; a batch goes through `npm run ai:apply`, which removes the batch from `ai/tmp/` once applied. `ai/bin/` alone keeps its 10 most recent copies: a safety net, not an archive.
+- `ai/session.md` carries the current task in the user's words: validated steps (10 at most), current point, pending points, doubts, and the tone of the exchange (mood, posture, expected form). One line per item, replaced; read again after any summary, emptied at the end of the task.
+- `ai/improvements.md`: what Claude notices and only the user can apply to make it more effective (CLAUDE.md rule, file layout, tooling, tokens spent needlessly); under NEGATIVE the problem and its solution, under POSITIVE the improvement. Claude records it without mentioning it; what it can apply itself, it applies and does not record. At three items, say so in one sentence, when the moment fits.
 
-## Socle
+## Foundation
 
-- **le problème :** <à remplir : ce qui ne va pas aujourd'hui, et pour qui>
-- **la solution recherchée :** <à remplir : ce que le projet apporte, et à qui>
-- **le but :** <à remplir : ce qui sera vrai une fois le projet réussi>
-- **cap :** <à remplir : la direction du moment ; un choix que ce cap tranche se mène sans demander, les zones floues structurantes se posent>
+- **the problem:** <to fill: what is wrong today, and for whom>
+- **the solution sought:** <to fill: what the project brings, and to whom>
+- **the goal:** <to fill: what will be true once the project succeeds>
+- **heading:** <to fill: the current direction; a choice this heading settles is made without asking, structuring grey areas are raised>
 
-**les problématiques :**
+**the issues:**
 
-1. <à remplir : une problématique par ligne>
+1. <to fill: one issue per line>
 
-- <à remplir : nom du projet> : <à remplir : nature, public, accès, langues>.
-- Stack : <à remplir : cadre, langage, style, version de Node> ; versions exactes : `package.json`.
-- Données : <à remplir : base, client, migrations ; seulement les noms des variables d'environnement>.
-- Textes : <à remplir : outil de traduction et dossier des langues> ; tests : Vitest (les scripts de `ai/scripts/` compris) ; lint : <à remplir>.
-- Git et mise en ligne : <à remplir : qui lance git, Claude ou l'utilisateur> ; branches `feat/<nom>` créées depuis <à remplir : branche d'intégration> ; <à remplir : ce que déclenche un push sur chaque branche>.
-- Commits : en anglais, en une ligne, `type(scope): summary` ; un gros changement peut demander un message sur plusieurs lignes, selon `ai/git-commits.md`.
-- Ordre de développement : les fiches en `Périmètre : projet` de `ai/features/INDEX.md`, <à remplir : le socle d'abord, puis l'ordre des branches>.
-- Sauvegarde : <à remplir : où et à quel rythme le projet entier est sauvegardé, `ai/`, `CLAUDE.md` et `.claude/` compris, puisqu'ils sont hors de git>.
+- <to fill: project name>: <to fill: nature, audience, access, languages>.
+- Stack: <to fill: framework, language, styling, runtime version>; exact versions: the project's manifest.
+- Data: <to fill: database, client, migrations; only the names of the environment variables>.
+- Texts: <to fill: translation tool and languages folder>; tests: <to fill> (the scripts of `ai/scripts/` through `npm run test:ai`); lint: <to fill>.
+- Git and deployment: <to fill: who runs git, Claude or the user>; branches `feat/<name>` created from <to fill: integration branch>; <to fill: what a push triggers on each branch>.
+- Commits: in English, on one line, `type(scope): summary`; a big change may need a multi-line message, following `ai/git-commits.md`.
+- Development order: the cards with `Scope: project` in `ai/features/INDEX.md`, <to fill: the base first, then the order of branches>.
+- Backup: <to fill: where and how often the whole project is backed up, `ai/`, `CLAUDE.md` and `.claude/` included, since they are out of git>.
 
 ## Code
 
-- Lire, respecter et améliorer `ai/05-code-guideline.md`.
-- Reproduire à l'identique tout texte de `ai/03-texts.md` ; une fois dans le code, le retirer de l'artefact.
-- Citer `F-n R<m>` dans le code et `F-n A<m>` dans le nom des tests.
+- Read, follow and improve `ai/05-code-guideline.md`.
+- Reproduce verbatim any text of `ai/03-texts.md`; once in the code, remove it from the artefact.
+- Cite `F-n R<m>` in the code and `F-n A<m>` in test names.
 
-## Réponses et autonomie
+## Answers and autonomy
 
-- Tu tranches seul tout le codage, arbitrages d'interface compris, et l'outillage (scripts, contrôles, hooks par `ai/scripts/hook.mts`, rangement des artefacts), selon la guideline, résumés en une ligne. Tu l'améliores sans attendre qu'on le demande, derrière la barrière de `npm run check:ai` (ni réseau, ni processus lancé, ni `.env`, ni dossier personnel) ; l'utilisateur garde le dernier mot. Reviennent à l'utilisateur : la direction du projet (produit, fonctionnalités, ce que reçoivent les utilisateurs), la sécurité et les données personnelles, le droit, le sens d'une règle ou d'une décision, CLAUDE.md, et tout ce qui est irréversible, dangereux, cassant ou public.
-- Lire la personne avant d'appliquer un format : longueur, ton et forme suivent son message et son humeur du moment. Un message bref appelle une réponse concise, jamais un ton relâché : la rédaction reste soignée et rigoureuse, quelle que soit la forme du message ; une réflexion ouverte appelle un échange, l'agacement appelle de reconnaître et de corriger sans se justifier ; un changement de posture (de l'exploration à l'exécution, de la confiance au doute) se reconnaît et l'on s'y ajuste. Interpréter l'intention plutôt que la lettre ; au doute, une seule question, posée simplement. Prose d'abord ; listes, titres et tableaux quand le contenu en a la forme.
-- Une décision qui revient à l'utilisateur : le problème, 2 à 4 options dont une recommandée, puis l'attente ; le reste se mène sans demander. Ni récapitulatif ni formule par réflexe ; la prochaine étape quand il y en a une.
-- Commandes pour Git Bash ; git est lancé par qui le Socle désigne. Toute commande que l'utilisateur exécute ou valide s'inscrit dans `ai/04-rituels.md` et revient à son déclencheur.
-- Pérenniser, c'est faire porter une règle par un contrôle automatique quand c'est possible ; hooks et scripts s'inscrivent dans `ai/04-rituels.md`.
+- You settle alone all the coding, interface trade-offs included, and the tooling (scripts, checks, hooks through `ai/scripts/hook.mts`, artefact layout), according to the guideline, summarised in one line. You improve it without waiting to be asked, behind the fence of `npm run check:ai` (no network, no spawned process, no `.env`, no home folder); the user has the last word. What comes back to the user: the direction of the project (product, features, what users receive), security and personal data, law, the meaning of a rule or decision, CLAUDE.md, and anything irreversible, dangerous, breaking or public.
+- Read the person before applying a format: length, tone and form follow their message and their mood of the moment. A brief message calls for a concise answer, never a casual tone: the writing stays careful and rigorous, whatever the form of the message; an open reflection calls for an exchange, irritation calls for acknowledging and correcting without justifying; a change of posture (from exploring to executing, from confidence to doubt) is recognised and adjusted to. Interpret the intent rather than the letter; when in doubt, a single question, simply asked. Prose first; lists, headings and tables when the content has that shape.
+- A decision that is the user's: the problem, 2 to 4 options with one recommended, then wait; the rest is carried out without asking. No reflexive recap or stock phrase; the next step when there is one.
+- Commands for Git Bash; git is run by whoever the Foundation names. Every command the user runs or approves is recorded in `ai/04-rituals.md` and comes back at its trigger.
+- Making a rule last means having an automatic check carry it whenever possible; hooks and scripts are recorded in `ai/04-rituals.md`.
 
-## Lecture de fichiers
+## Reading files
 
-- Règle d'or : avant chaque traitement, choisir la méthode la moins coûteuse en contexte. Un contenu long ne se lit jamais en entier : le réduire d'abord par script (`npm run peek`), envoyer une sortie volumineuse dans `ai/tmp/claude/`, et itérer.
-- Trouver : `Glob` (ex. `**/INDEX.md`) ; chercher : `Grep` (`-i`, `-n`, `-A`, `head_limit`) ; lire un extrait : `Read` avec `offset` et `limit`.
-- Bash seulement pour les scripts et commandes du projet (lint, tsc, vitest, build…), jamais pour lire ou chercher : ni variables (`f=...`), ni substitutions `$(...)`, ni chaînes `;` ou `|`.
+- Golden rule: before each task, pick the method that costs the least context. A long content is never read whole: first reduce it by script (`npm run peek`), send a large output to `ai/tmp/claude/`, and iterate.
+- Find: `Glob` (e.g. `**/INDEX.md`); search: `Grep` (`-i`, `-n`, `-A`, `head_limit`); read an excerpt: `Read` with `offset` and `limit`.
+- Bash only for the project's scripts and commands (lint, tsc, tests, build…), never to read or search: no variables (`f=...`), no `$(...)` substitutions, no `;` or `|` chains.

@@ -1,5 +1,5 @@
-// Hook SessionStart : vide `ai/tmp/claude/`, les fichiers jetables de Claude (scripts d'essai, captures), de ce qui a plus de 24 h.
-// La racine de `ai/tmp/` est à l'utilisateur et n'est jamais purgée. `--tout` vide le dossier sans attendre.
+// SessionStart hook: empties `ai/tmp/claude/`, Claude's disposable files (trial scripts, captures), of what is older than 24 h.
+// The root of `ai/tmp/` belongs to the user and is never purged. `--all` empties the folder without waiting.
 
 import { readdir, rm, stat } from "node:fs/promises";
 import path from "node:path";
@@ -24,9 +24,9 @@ export async function purge(dir: string, maxAgeMs: number, { all = false, nowMs 
 }
 
 if (import.meta.main) {
-  const all = process.argv.includes("--tout");
+  const all = process.argv.includes("--all");
   for (const { dir, maxAgeMs } of PURGED) {
     const { removed, kept } = await purge(dir, maxAgeMs, { all });
-    if (removed) console.log(`${dir.replaceAll("\\", "/")}/ : ${removed} entrée(s) périmée(s) supprimée(s), ${kept} gardée(s).`);
+    if (removed) console.log(`${dir.replaceAll("\\", "/")}/: ${removed} stale entr${removed > 1 ? "ies" : "y"} removed, ${kept} kept.`);
   }
 }

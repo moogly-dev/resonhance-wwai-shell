@@ -1,15 +1,15 @@
-// Installe le shell dans un projet existant, depuis un clone du shell : node <clone>/ai/scripts/install.mts, lancé à la racine du projet.
-// Rien d'existant n'est écrasé ni retiré : ce qui manque est copié, un JSON existant ne reçoit que des clés absentes,
-// une ligne n'est ajoutée qu'en fin de fichier, et la version du shell d'un fichier déjà présent attend dans ai/fusion/.
+// Installs the shell into an existing project, from a clone of the shell: node <clone>/ai/scripts/install.mts, run at the project's root.
+// Nothing existing is overwritten or removed: what is missing is copied, an existing JSON only gains missing keys,
+// a line is only added at the end of a file, and the shell's version of a file already there waits in ai/merge/.
 
 import { appendFileSync, cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-export const FUSION = "ai/fusion";
+export const MERGE = "ai/merge";
 const HOOK_EVENTS = ["SessionStart", "PreToolUse", "Stop"];
-// Ce qui naît à l'usage dans le shell n'a rien à faire dans un autre projet.
-const LOCAL_ONLY = /^(?:bin|tmp|fusion)(?:[\\/]|$)|^claude[\\/]usage\.json$|^(?:session|improvements|mini-hub)\.md$/;
+// What is born from use in the shell has nothing to do in another project.
+const LOCAL_ONLY = /^(?:bin|tmp|merge)(?:[\\/]|$)|^claude[\\/]usage\.json$|^(?:session|improvements)\.md$/;
 const SCRIPTS: Record<string, string> = {
   "check:ai": "node ai/scripts/check-ai.mts",
   "ai:bin": "node ai/scripts/ai-bin.mts",
@@ -19,7 +19,7 @@ const SCRIPTS: Record<string, string> = {
   "test:ai": "vitest run --config ai/scripts/vitest.config.mts",
   peek: "node ai/scripts/peek.mts",
 };
-// Hors de git : l'outillage de Claude, sauf ce que le projet avait déjà (l'équipe en décide).
+// Out of git: Claude's tooling, except what the project already had (the team decides).
 const KEPT_OUT = ["CLAUDE.md", ".claude/", "ai/", "context/", ".ignore"];
 
 type Json = Record<string, unknown>;
@@ -35,7 +35,7 @@ function parse(file: string): Json | undefined {
   }
 }
 
-// L'indentation du fichier d'origine est gardée.
+// The original file's indentation is kept.
 function writeJson(file: string, value: Json) {
   const before = existsSync(file) ? readFileSync(file, "utf8") : "";
   const indent = /^\{\r?\n([ \t]+)/.exec(before)?.[1] ?? "  ";
@@ -54,22 +54,22 @@ export function install(target: string, shell: string): { ok: boolean; report: s
   const at = (path: string) => join(target, path);
   const from = (path: string) => join(shell, path);
   const stop = (message: string) => ({ ok: false, report: [message] });
-  if (resolve(target) === resolve(shell)) return stop("Lancer depuis la racine de ton projet, pas depuis le shell.");
-  if (existsSync(at("ai/scripts/check-ai.mts"))) return stop("Le shell est déjà installé ici : rien n'a été modifié.");
-  if (existsSync(at("ai"))) return stop("Un dossier ai/ existe déjà dans ce projet : installation arrêtée, rien n'a été modifié.");
+  if (resolve(target) === resolve(shell)) return stop("Run it from your project's root, not from the shell.");
+  if (existsSync(at("ai/scripts/check-ai.mts"))) return stop("The shell is already installed here: nothing was changed.");
+  if (existsSync(at("ai"))) return stop("This project already has an ai/ folder: installation stopped, nothing was changed.");
   const pkg = existsSync(at("package.json")) ? parse(at("package.json")) : {};
-  if (!pkg) return stop("package.json illisible (JSON invalide) : installation arrêtée, rien n'a été modifié.");
+  if (!pkg) return stop("package.json unreadable (invalid JSON): installation stopped, nothing was changed.");
 
   const existed = new Set(KEPT_OUT.filter((path) => existsSync(at(path))));
   const report: string[] = [];
-  const park = (path: string, why = "gardé tel quel") => {
-    mkdirSync(at(FUSION), { recursive: true });
-    cpSync(from(path), join(at(FUSION), path.replace(/^\./, "").replaceAll("/", "-")));
-    report.push(`${path} existait : ${why} ; la version du shell attend dans ${FUSION}/, Claude propose la fusion.`);
+  const park = (path: string, why = "kept as is") => {
+    mkdirSync(at(MERGE), { recursive: true });
+    cpSync(from(path), join(at(MERGE), path.replace(/^\./, "").replaceAll("/", "-")));
+    report.push(`${path} existed: ${why}; the shell's version waits in ${MERGE}/, Claude proposes the merge.`);
   };
 
   cpSync(from("ai"), at("ai"), { recursive: true, filter: (source) => !LOCAL_ONLY.test(relative(from("ai"), source)) });
-  report.push("ai/ copié.");
+  report.push("ai/ copied.");
 
   if (existsSync(at("CLAUDE.md"))) park("CLAUDE.md");
   else cpSync(from("CLAUDE.md"), at("CLAUDE.md"));
@@ -81,7 +81,7 @@ export function install(target: string, shell: string): { ok: boolean; report: s
     mkdirSync(at(".claude"), { recursive: true });
     cpSync(from(".claude/settings.json"), settingsFile);
   } else if (!theirs) {
-    park(".claude/settings.json", "illisible, gardé tel quel, hooks du shell inactifs en attendant");
+    park(".claude/settings.json", "unreadable, kept as is, the shell's hooks inactive meanwhile");
   } else {
     const hooks = record(theirs.hooks);
     for (const event of HOOK_EVENTS) {
@@ -93,16 +93,16 @@ export function install(target: string, shell: string): { ok: boolean; report: s
     const allow = list(permissions.allow);
     const added = list(record(ours.permissions).allow).filter((rule) => !allow.includes(rule));
     writeJson(settingsFile, { ...theirs, permissions: { ...permissions, allow: [...allow, ...added] }, hooks });
-    report.push(".claude/settings.json existait : hooks et autorisations du shell ajoutés, rien retiré.");
+    report.push(".claude/settings.json existed: the shell's hooks and permissions added, nothing removed.");
   }
 
-  if (existed.has(".ignore")) report.push(`.ignore existait : ajouté en fin de fichier ${appendLines(at(".ignore"), readFileSync(from(".ignore"), "utf8").split(/\r?\n/).filter(Boolean)).join(", ") || "rien"}.`);
+  if (existed.has(".ignore")) report.push(`.ignore existed: added at the end ${appendLines(at(".ignore"), readFileSync(from(".ignore"), "utf8").split(/\r?\n/).filter(Boolean)).join(", ") || "nothing"}.`);
   else cpSync(from(".ignore"), at(".ignore"));
 
   const added = appendLines(at(".gitignore"), KEPT_OUT.filter((path) => !existed.has(path)));
-  report.push(`.gitignore : ${added.length ? `ajouté en fin de fichier ${added.join(", ")}` : "rien à ajouter"}.`);
+  report.push(`.gitignore: ${added.length ? `added at the end ${added.join(", ")}` : "nothing to add"}.`);
   const kept = KEPT_OUT.filter((path) => existed.has(path));
-  if (kept.length) report.push(`${kept.join(", ")} existai(en)t déjà : non ajouté(s) au .gitignore, à toi de décider s'ils restent dans git.`);
+  if (kept.length) report.push(`${kept.join(", ")} already existed: not added to .gitignore, your call whether they stay in git.`);
 
   const created = !existsSync(at("package.json"));
   const scripts = record(pkg.scripts);
@@ -113,10 +113,10 @@ export function install(target: string, shell: string): { ok: boolean; report: s
   for (const [name, version] of Object.entries(record(parse(from("package.json"))?.devDependencies))) if (!(name in dev) && !(name in deps)) dev[name] = version;
   const base = created ? { name: resolve(target).replace(/^.*[\\/]/, "").toLowerCase(), private: true } : pkg;
   writeJson(at("package.json"), { ...base, scripts, devDependencies: dev });
-  report.push(`package.json ${created ? "créé" : "complété"} : scripts et devDependencies manquants ajoutés, aucun existant changé.`);
-  if (clashes.length) report.push(`Scripts déjà pris par le projet, gardés tels quels : ${clashes.join(", ")} ; Claude propose un autre nom.`);
+  report.push(`package.json ${created ? "created" : "completed"}: missing scripts and devDependencies added, none changed.`);
+  if (clashes.length) report.push(`Scripts already taken by the project, kept as is: ${clashes.join(", ")}; Claude proposes another name.`);
 
-  report.push("Ensuite : npm install, puis ouvre le projet dans Claude Code et écris « on démarre ».");
+  report.push("Next: npm install, then open the project in Claude Code and say hello.");
   return { ok: true, report };
 }
 

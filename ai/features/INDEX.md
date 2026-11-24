@@ -1,6 +1,6 @@
-# Index des fonctionnalités
+# Features index
 
-Lire ce fichier d'abord, puis seulement la fiche de la fonctionnalité visée.
-Une dépendance ne s'ouvre que pour la règle citée (`F-n R<m>`).
-« Périmètre : projet » : à coder dans la ligne en cours ; « secondaire » : gardée, construite seulement si on la demande. Un changement de ligne se traduit par ce champ, pas par une décision.
-Fiche : `features/F-nnn-slug.md`, numéro sur trois chiffres, sur le modèle `ai/modeles/feature.md`. En-tête : `references` liste tout ce que la fiche cite, `used_by` reflète le `depends_on` des autres fiches, `rules` et `acceptance` comptent ses R et ses A. Son entrée ici reprend son en-tête à l'identique.
+Read this file first, then only the card of the target feature.
+A dependency is opened only for the cited rule (`F-n R<m>`).
+"Scope: project": to build in the current line of work; "secondary": kept, built only on request. A change of line shows in this field, not in a decision.
+Card: `features/F-nnn-slug.md`, three-digit number, on the template `ai/templates/feature.md`. Header: `references` lists everything the card cites, `used_by` mirrors the other cards' `depends_on`, `rules` and `acceptance` count its R and its A. Its entry here mirrors its header exactly.

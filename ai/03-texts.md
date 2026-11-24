@@ -1,5 +1,5 @@
-# 03 — Textes
+# 03 — Texts
 
-Révision : 2026-11-18
+Revision: 2026-11-24
 
-Format d'un texte : titre ``### T-n `clé.de.traduction` ``, puis une ligne par langue du Socle (FR, EN…), Sert (F-n), Statut (provisoire | actif). Un texte entré dans le code à l'identique est retiré d'ici.
+Format of a text: heading ``### T-n `translation.key` ``, then one line per language of the Foundation (EN, FR…), Serves (F-n), Status (provisional | active). A text that entered the code verbatim is removed from here.

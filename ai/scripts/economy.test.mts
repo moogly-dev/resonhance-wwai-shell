@@ -5,21 +5,21 @@ import { expect, test } from "vitest";
 import { heavyCall, oversizedRead } from "./economy.mts";
 
 const root = mkdtempSync(join(tmpdir(), "economy-"));
-writeFileSync(join(root, "gros.json"), "x".repeat(70_000));
-writeFileSync(join(root, "moyen.json"), "x".repeat(30_000));
-writeFileSync(join(root, "petit.md"), "x");
+writeFileSync(join(root, "large.json"), "x".repeat(70_000));
+writeFileSync(join(root, "medium.json"), "x".repeat(30_000));
+writeFileSync(join(root, "small.md"), "x");
 
-test("lire tout un gros fichier est refusé ; un extrait, un petit fichier ou une image passent", () => {
-  expect(oversizedRead({ tool_name: "Read", tool_input: { file_path: "gros.json" } }, root)).toContain("Lecture refusée : gros.json fait 70 Ko");
-  expect(oversizedRead({ tool_name: "Read", tool_input: { file_path: "gros.json", limit: 40 } }, root)).toBeUndefined();
-  expect(oversizedRead({ tool_name: "Read", tool_input: { file_path: "petit.md" } }, root)).toBeUndefined();
+test("reading a whole large file is refused; an excerpt, a small file or an image go through", () => {
+  expect(oversizedRead({ tool_name: "Read", tool_input: { file_path: "large.json" } }, root)).toContain("Read refused: large.json is 70 KB");
+  expect(oversizedRead({ tool_name: "Read", tool_input: { file_path: "large.json", limit: 40 } }, root)).toBeUndefined();
+  expect(oversizedRead({ tool_name: "Read", tool_input: { file_path: "small.md" } }, root)).toBeUndefined();
   expect(oversizedRead({ tool_name: "Read", tool_input: { file_path: "figure.png" } }, root)).toBeUndefined();
 });
 
-test("un outil déclaré lourd, une image ou un fichier lourd déclenchent le rappel ; le reste non", () => {
+test("a tool declared heavy, an image or a heavy file trigger the reminder; the rest does not", () => {
   expect(heavyCall({ tool_name: "mcp__web__read_page" }, root, ["mcp__web__read_page"])).toBe("mcp__web__read_page");
   expect(heavyCall({ tool_name: "Read", tool_input: { file_path: "figure.png" } }, root)).toBe("image");
-  expect(heavyCall({ tool_name: "Read", tool_input: { file_path: "moyen.json" } }, root)).toBe("gros fichier");
-  expect(heavyCall({ tool_name: "Read", tool_input: { file_path: "petit.md" } }, root)).toBeUndefined();
+  expect(heavyCall({ tool_name: "Read", tool_input: { file_path: "medium.json" } }, root)).toBe("heavy file");
+  expect(heavyCall({ tool_name: "Read", tool_input: { file_path: "small.md" } }, root)).toBeUndefined();
   expect(heavyCall({ tool_name: "Bash", tool_input: { command: "npm test" } }, root)).toBeUndefined();
 });

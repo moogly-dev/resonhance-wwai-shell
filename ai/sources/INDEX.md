@@ -1,10 +1,10 @@
-# Index des références
+# References index
 
-Lire ce fichier d'abord, puis seulement l'entrée visée.
-Fiche de S-n : `ai/sources/S-nnn.md`, sur trois chiffres, sur le modèle `ai/modeles/source.md`. Une source naît par `npm run ai:apply`, rangée sous une section `## n. Thème` de ce fichier, créée d'abord.
+Read this file first, then only the target entry.
+S-n card: `ai/sources/S-nnn.md`, three digits, on the template `ai/templates/source.md`. A source is born through `npm run ai:apply`, filed under a `## n. Theme` section of this file, created first.
 
-Ce qui sert le projet ; ce qui ne sert que Claude, ses outils et sa méthode, va dans `ai/claude/sources/`.
+What serves the project; what only serves Claude, its tools and its method, goes in `ai/claude/sources/`.
 
-Rang, à chercher dans cet ordre, quel que soit le domaine : `1` texte officiel (loi, règlement, journal officiel), norme (ISO, IETF, W3C, WHATWG), documentation officielle de la version employée, statistique publique, revue à comité de lecture ; `2` autorité reconnue (autorité de contrôle, institution, référence de métier) ; `3` praticiens, presse, forums, encyclopédies, témoignages, secondes mains : une piste, à remonter jusqu'à sa source primaire. Une décision ne s'appuie jamais sur une source de rang 3 seule ; ce qui n'a pas de rang 1 le dit sous `## Fiabilité`, avec ce qui a été cherché.
+Rank, to search in this order, whatever the field: `1` official text (law, regulation, official journal), standard (ISO, IETF, W3C, WHATWG), official documentation of the version in use, public statistics, peer-reviewed journal; `2` recognised authority (regulator, institution, professional reference); `3` practitioners, press, forums, encyclopedias, testimonies, second-hand: a lead, to trace back to its primary source. A decision never rests on a rank-3 source alone; what has no rank 1 says so under `## Reliability`, with what was searched.
 
-Fiabilité, ce qu'on sait à ce jour : `vérifié` demande au moins une source de rang 1 lue, ou deux sources différentes de rang 2 ; `constaté` vu ou mesuré directement ; `recoupé` au moins deux origines indépendantes concordent sur l'essentiel, les reprises d'une même dépêche ou enquête comptant pour une ; `une source` une seule origine, ou le porteur du projet qui parle de lui-même ; `contesté` les sources se contredisent sur le point central ; `non sourcé` aucun lien conservé. Ce qui reste à faire, et une information périmée avec sa date, s'écrivent sous `## Fiabilité`.
+Reliability, what is known to date: `verified` needs at least one rank-1 source read, or two different rank-2 sources; `observed` seen or measured directly; `cross-checked` at least two independent origins agree on the essentials, reprints of one wire story or investigation counting as one; `single source` a single origin, or the project's owner speaking of itself; `disputed` the sources contradict each other on the central point; `unsourced` no link kept. What remains to do, and outdated information with its date, are written under `## Reliability`.

@@ -1,6 +1,6 @@
 # resonhance-wwai-shell
 
-A drop-in kit that turns Claude Code from a chat you have to babysit into a tool that keeps its bearings. Project rules and memory are written in French.
+A drop-in kit that turns Claude Code from a chat you have to babysit into a tool that keeps its bearings. Everything is written in English; Claude answers in your language. Works with any stack.
 
 ## What changes compared to a plain Claude Code session
 
@@ -15,7 +15,7 @@ A drop-in kit that turns Claude Code from a chat you have to babysit into a tool
 
 ## Requirements
 
-[Claude Code](https://code.claude.com), Node 24.2+, and Git Bash on Windows.
+[Claude Code](https://code.claude.com), Node 24.2+ (the shell's own scripts run on it, whatever your project's stack), and Git Bash on Windows.
 
 ## New project
 
@@ -32,7 +32,7 @@ git clone --depth 1 https://github.com/moogly-dev/resonhance-wwai-shell.git ../w
 
 Then run `npm install`, open the project in Claude Code and say hello.
 
-The installer never overwrites or deletes anything. It stops untouched if your project already has an `ai/` folder. A file you already have (`CLAUDE.md`, `.claude/settings.json`…) keeps its content: the shell's version waits in `ai/fusion/` and Claude proposes the merge. JSON files only gain missing keys, and `.gitignore` only gains lines at the end.
+The installer never overwrites or deletes anything. It stops untouched if your project already has an `ai/` folder. A file you already have (`CLAUDE.md`, `.claude/settings.json`…) keeps its content: the shell's version waits in `ai/merge/` and Claude proposes the merge. JSON files only gain missing keys, and `.gitignore` only gains lines at the end.
 
 ## How it works
 
@@ -40,7 +40,7 @@ The installer never overwrites or deletes anything. It stops untouched if your p
 - `ai/`: the project memory (objectives, decisions, features, sources) and Claude's scripts.
 - `.claude/settings.json`: hooks that run `ai/scripts/hook.mts` at session start, before each tool call and at the end of each turn.
 
-Optional: recommended global Claude Code settings, in French, in [docs/claude-settings.md](docs/claude-settings.md).
+Optional: recommended global Claude Code settings in [docs/claude-settings.md](docs/claude-settings.md).
 
 ## Contributing
 

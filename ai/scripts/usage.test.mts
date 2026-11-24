@@ -20,17 +20,17 @@ const project = () => {
   return root;
 };
 
-describe("chemins suivis", () => {
-  test("ai/ et CLAUDE.md, relatifs ou absolus, sauf ai/bin et ai/tmp", () => {
+describe("tracked paths", () => {
+  test("ai/ and CLAUDE.md, relative or absolute, except ai/bin and ai/tmp", () => {
     expect(projectPath("ai/01-decisions.md")).toBe("ai/01-decisions.md");
-    expect(projectPath(resolve("ai", "features", "F-001-un.md"))).toBe("ai/features/F-001-un.md");
+    expect(projectPath(resolve("ai", "features", "F-001-one.md"))).toBe("ai/features/F-001-one.md");
     expect(projectPath("CLAUDE.md")).toBe("CLAUDE.md");
-    for (const path of ["ai/tmp/claude/x.mts", "ai/bin/2026-11-18/a.md", "lib/a.ts", "../autre/ai/a.md", "C:\\Users\\x\\ai\\a.md", undefined]) expect(projectPath(path)).toBeUndefined();
+    for (const path of ["ai/tmp/claude/x.mts", "ai/bin/2026-11-18/a.md", "lib/a.ts", "../other/ai/a.md", "C:\\Users\\x\\ai\\a.md", undefined]) expect(projectPath(path)).toBeUndefined();
   });
 });
 
-describe("registre d'usage", () => {
-  test("compte lectures et écritures, et date le dernier emploi", () => {
+describe("usage ledger", () => {
+  test("counts reads and writes, and dates the last use", () => {
     const ledger = empty();
     recordCall({ tool_name: "Read", tool_input: { file_path: "ai/01-decisions.md" } }, ledger, "2026-11-17");
     recordCall({ tool_name: "Edit", tool_input: { file_path: "ai/01-decisions.md" } }, ledger, DAY);
@@ -38,14 +38,14 @@ describe("registre d'usage", () => {
     expect(ledger.files).toEqual({ "ai/01-decisions.md": { read: 1, write: 1, last: DAY }, "ai/features": { read: 1, write: 0, last: DAY } });
   });
 
-  test("d'une commande, seuls les noms de scripts : jamais son texte", () => {
-    const ledger = recordCall({ tool_name: "Bash", tool_input: { command: "SECRET=abc npm run ai:bin -- essai && node ai/scripts/ai-tmp.mts --tout && npm test" } }, empty(), DAY);
+  test("from a command, only script names: never its text", () => {
+    const ledger = recordCall({ tool_name: "Bash", tool_input: { command: "SECRET=abc npm run ai:bin -- trial && node ai/scripts/ai-tmp.mts --all && npm test" } }, empty(), DAY);
     expect(Object.keys(ledger.runs)).toEqual(["npm:ai:bin", "npm:test", "script:ai-tmp"]);
     expect(JSON.stringify(ledger)).not.toContain("abc");
     expect(scriptsOf(undefined)).toEqual([]);
   });
 
-  test("s'écrit et se relit ; un registre illisible repart à vide sans erreur", () => {
+  test("writes and reads back; an unreadable ledger restarts empty without error", () => {
     const root = project();
     expect(readLedger(root)).toEqual(empty());
     writeLedger(recordCall({ tool_name: "Read", tool_input: { file_path: "ai/session.md" } }, empty(), DAY, root), root);
@@ -53,11 +53,11 @@ describe("registre d'usage", () => {
   });
 });
 
-describe("état de session", () => {
-  test("par session, dans ai/tmp/claude/hooks, l'identifiant nettoyé de tout chemin", () => {
+describe("session state", () => {
+  test("per session, in ai/tmp/claude/hooks, the id cleaned of any path", () => {
     const root = project();
     writeSession({ baseline: ["a"], dirty: true, told: [] }, root, "../../evil");
     expect(readSession(root, "evil")).toEqual({ baseline: ["a"], dirty: true, told: [] });
-    expect(readSession(root, "autre")).toEqual({ baseline: [], dirty: false, told: [] });
+    expect(readSession(root, "other")).toEqual({ baseline: [], dirty: false, told: [] });
   });
 });

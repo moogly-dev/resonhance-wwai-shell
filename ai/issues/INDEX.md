@@ -1,5 +1,5 @@
-# Index des questions
+# Questions index
 
-Lire ce fichier d'abord, puis seulement la question visée.
-Pour trouver les questions qui touchent un élément : outil `Grep`, son identifiant en mot entier, dans `ai/issues/`.
-Une question validée par l'utilisateur naît par `npm run ai:apply`, qui pose son numéro et son entrée ici, sur le modèle `ai/modeles/question.md` ; adressée, elle est supprimée après avoir étayé ses éléments.
+Read this file first, then only the target question.
+To find the questions touching an item: the `Grep` tool, its identifier as a whole word, in `ai/issues/`.
+A question approved by the user is born through `npm run ai:apply`, which sets its number and its entry here, on the template `ai/templates/question.md`; once answered, it is deleted after supporting its items.

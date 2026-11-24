@@ -1,0 +1,27 @@
+# To rename to .gitignore when a new project starts (ai/onboarding.md).
+
+# Security & environment
+.env
+.env.local
+.env*.local
+
+# Dependencies & build (to complete according to the stack of the Foundation)
+node_modules/
+dist/
+build/
+*.tsbuildinfo
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS & IDE
+.DS_Store
+.vscode/
+
+# AI: Claude's tooling stays out of git (CLAUDE.md, "ai/ is out of git")
+.claude/
+ai/
+CLAUDE.md
+context/
+.ignore

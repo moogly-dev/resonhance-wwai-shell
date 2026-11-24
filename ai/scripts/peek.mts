@@ -1,17 +1,17 @@
-// Règle d'or : un contenu long ne se lit jamais en entier ; ce script n'en montre que l'utile, au plus léger.
-// Usage : npm run peek -- <fichier> [--path pages.0.text] [--around mot] [--diff autre-fichier] [--head n]
-//   sans option : taille, lignes, et pour du JSON, la forme (clés, longueurs) ; --around : extraits autour du mot ;
-//   --diff : seules les lignes qui diffèrent, numérotées ; --head : les n premiers caractères.
+// Golden rule: a long content is never read whole; this script only shows what is useful, as lightly as possible.
+// Usage: npm run peek -- <file> [--path pages.0.text] [--around word] [--diff other-file] [--head n]
+//   no option: size, lines, and for JSON, the shape (keys, lengths); --around: excerpts around the word;
+//   --diff: only the lines that differ, numbered; --head: the first n characters.
 
 import { readFileSync } from "node:fs";
 
 const AROUND_CHARS = 120;
 const MAX_HITS = 8;
 const MAX_DIFF_LINES = 40;
-// Assez pour voir une réponse de l'API (liste de pages et leurs champs), pas plus.
+// Enough to see an API response (a list of pages and their fields), no more.
 const MAX_DEPTH = 3;
 
-// Une valeur au bout d'un chemin « a.b.0.c » ; un texte JSON est d'abord parsé.
+// A value at the end of an "a.b.0.c" path; a JSON text is parsed first.
 export function pick(raw: string, path?: string): unknown {
   let value: unknown = raw;
   try {
@@ -23,12 +23,12 @@ export function pick(raw: string, path?: string): unknown {
   return value;
 }
 
-// La forme d'une valeur, sans son contenu : clés, types, longueurs des textes et des listes.
+// The shape of a value, without its content: keys, types, lengths of texts and lists.
 export function shape(value: unknown, depth = 0): string {
-  if (typeof value === "string") return `texte (${value.length} car.)`;
-  if (Array.isArray(value)) return `liste (${value.length})${value.length && depth < MAX_DEPTH ? ` de ${shape(value[0], depth + 1)}` : ""}`;
+  if (typeof value === "string") return `text (${value.length} chars)`;
+  if (Array.isArray(value)) return `list (${value.length})${value.length && depth < MAX_DEPTH ? ` of ${shape(value[0], depth + 1)}` : ""}`;
   if (value && typeof value === "object") {
-    if (depth >= MAX_DEPTH) return `objet (${Object.keys(value).length} clés)`;
+    if (depth >= MAX_DEPTH) return `object (${Object.keys(value).length} keys)`;
     return `{ ${Object.entries(value).map(([key, inner]) => `${key}: ${shape(inner, depth + 1)}`).join(", ")} }`;
   }
   return JSON.stringify(value);
@@ -43,7 +43,7 @@ export function around(text: string, word: string, width = AROUND_CHARS): string
   return hits;
 }
 
-// Lignes qui diffèrent entre deux textes, numérotées, au plus MAX_DIFF_LINES : de quoi itérer sans relire le document.
+// Lines that differ between two texts, numbered, MAX_DIFF_LINES at most: enough to iterate without rereading the document.
 export function diff(a: string, b: string): string[] {
   const left = a.split("\n");
   const right = b.split("\n");
@@ -64,7 +64,7 @@ if (import.meta.main) {
   else if (has("diff")) {
     const other = pick(readFileSync(option("diff")!, "utf8"), option("path"));
     const changes = diff(text, typeof other === "string" ? other : JSON.stringify(other, null, 1));
-    console.log(changes.length ? changes.join("\n") : "identiques");
+    console.log(changes.length ? changes.join("\n") : "identical");
   } else if (has("head")) console.log(text.slice(0, Number(option("head"))));
-  else console.log(`${text.length} car., ${text.split("\n").length} lignes\n${shape(value)}`);
+  else console.log(`${text.length} chars, ${text.split("\n").length} lines\n${shape(value)}`);
 }

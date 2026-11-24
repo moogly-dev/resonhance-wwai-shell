@@ -1,145 +1,153 @@
 # 05 — Code guideline
 
-Révision : 2026-11-18
+Revision: 2026-11-24
 
-Format d'une règle : titre `### P-n — titre` (principe), `### U-n — titre` (règle d'usage) ou `### C-n — titre` (convention), puis Énoncé, S'appuie sur, Sert, Porte sur, Statut (provisoire | actif), Origine (facultatif : la règle de l'utilisateur, datée, dans ses mots).
+Format of a rule: heading `### P-n — title` (principle), `### U-n — title` (usage rule) or `### C-n — title` (convention), then Statement, Builds on, Serves, Applies to, Status (provisional | active), Origin (optional: the user's rule, dated, in their words).
 
-## 1. Principes
+## 1. Principles
 
-Exigences communes au code et à toute l'interface, quels que soient le langage et le cadre du Socle.
+Requirements common to the code and the whole interface, whatever the language and framework of the Foundation.
 
-### P-1 — Code minimal et chirurgical
+### P-1 — Minimal, surgical code
 
-- **Énoncé :** Chaque ligne posée est indispensable à la demande : ni option ni cas non demandés, ni code mort, commenté ou inutilisé ; un fichier par rôle (C-3) ; conventions de ce fichier et style du code voisin. Une balise de gabarit et une classe de style comptent comme des lignes de code : chaque élément enveloppant porte une sémantique ou une mise en page que son parent ne porte pas déjà, chaque classe a un effet visible. Avant de présenter, chaque ligne, balise et classe passe la question : que perd-on si on la retire ?
-- **S'appuie sur :** C-3
-- **Sert :** —
-- **Porte sur :** tout le code
-- **Statut :** provisoire
-### P-2 — Natif d'abord
+- **Statement:** Every line written is essential to the request: no option or case not asked for, no dead, commented-out or unused code; one file per role (C-3); conventions of the file and style of the surrounding code. A template tag and a style class count as lines of code: every wrapping element carries a semantics or a layout its parent does not already carry, every class has a visible effect. Before presenting, every line, tag and class passes the question: what do we lose if we remove it?
+- **Builds on:** C-3
+- **Serves:** —
+- **Applies to:** all code
+- **Status:** provisional
 
-- **Énoncé :** L'élément natif avant tout ajout : la bonne balise HTML avant un attribut ARIA, l'API du langage, du navigateur ou du système et les fonctions du cadre du Socle avant toute bibliothèque ; une API native récente avec un repli par détection de fonctionnalité plutôt qu'une dépendance ; aucune dépendance nouvelle sans décision.
-- **S'appuie sur :** —
-- **Sert :** —
-- **Porte sur :** tout le code
-- **Statut :** provisoire
+### P-2 — Native first
 
-### P-3 — Couches
+- **Statement:** The native element before any addition: the right HTML tag before an ARIA attribute, the API of the language, the browser or the system and the framework's own features before any library; a recent native API with a fallback by feature detection rather than a dependency; no new dependency without a decision.
+- **Builds on:** —
+- **Serves:** —
+- **Applies to:** all code
+- **Status:** provisional
 
-- **Énoncé :** Une couche ne s'appuie que sur celles du dessous (données, logique, interface) ; aucune valeur de présentation (couleur, taille, espacement, durée) écrite en dur hors de la base commune qui la nomme (jetons, thème, configuration).
-- **S'appuie sur :** —
-- **Sert :** —
-- **Porte sur :** tout le code
-- **Statut :** provisoire
+### P-3 — Layers
 
-### P-4 — Accessibilité
+- **Statement:** A layer only relies on the ones below it (data, logic, interface); no presentation value (colour, size, spacing, duration) hard-coded outside the common base that names it (tokens, theme, configuration).
+- **Builds on:** —
+- **Serves:** —
+- **Applies to:** all code
+- **Status:** provisional
 
-- **Énoncé :** Toute interface est utilisable au clavier et au lecteur d'écran, avec des contrastes suffisants dans chaque thème ; mouvements réduits quand le système le demande ; WCAG 2.2 niveau AA au minimum ; clavier et ARIA des composants selon le guide WAI-ARIA Authoring Practices ; libellés, textes alternatifs, ordre des titres, langue déclarée.
-- **S'appuie sur :** P-2
-- **Sert :** —
-- **Porte sur :** toute interface
-- **Statut :** provisoire
+### P-4 — Accessibility
 
-### P-5 — Vérification avant de présenter, au moindre coût
+- **Statement:** Every interface is usable with a keyboard and a screen reader, with sufficient contrast in each theme; reduced motion when the system asks for it; WCAG 2.2 level AA at least; keyboard and ARIA of components according to the WAI-ARIA Authoring Practices guide; labels, alternative texts, heading order, declared language.
+- **Builds on:** P-2
+- **Serves:** —
+- **Applies to:** every interface
+- **Status:** provisional
 
-- **Énoncé :** Avant de présenter, Claude passe les contrôles du Socle sur ce qui change : types, lint et tests des fichiers touchés ; build de production avant toute livraison d'interface et dès que la configuration change ; la suite complète avant une livraison. Contrôles groupés : une seule passe en fin de bloc, jamais après chaque modification. Ce qui se voit à l'écran, l'utilisateur le vérifie de ses yeux : Claude dit quoi regarder, sans script de mesure ni capture ; un script de navigateur seulement pour ce que l'œil ne voit pas (focus, navigation, valeur calculée) ou à la demande. Un échec se mesure avant d'être expliqué ; au deuxième échec sur un même point, Claude change de méthode pour la plus simple qui réponde à la demande.
-- **S'appuie sur :** —
-- **Sert :** —
-- **Porte sur :** tout le code
-- **Statut :** provisoire
-### P-6 — Données personnelles et secrets
+### P-5 — Check before presenting, at the lowest cost
 
-- **Énoncé :** Aucune donnée personnelle (adresse IP, identifiant, contenu saisi) écrite, journalisée ou envoyée à un tiers sans décision ; une erreur se journalise par son code, à défaut par son message, jamais avec la requête ni une valeur saisie ; une donnée périmée ou révoquée (lien à usage unique, session, compteur d'essais) est supprimée au plus tard à l'écriture suivante ; un secret se lit à l'exécution par le nom de sa variable, jamais écrit dans le code ni dans `ai/`.
-- **S'appuie sur :** —
-- **Sert :** —
-- **Porte sur :** tout le code
-- **Statut :** provisoire
+- **Statement:** Before presenting, Claude runs the checks of the Foundation on what changes: types, lint and tests of the touched files; production build before any interface delivery and as soon as the configuration changes; the full suite before a delivery. Grouped checks: a single pass at the end of a block, never after each change. What shows on screen, the user checks with their own eyes: Claude says what to look at, without a measuring script or capture; a browser script only for what the eye cannot see (focus, navigation, computed value) or on request. A failure is measured before being explained; at the second failure on the same point, Claude switches to the simplest method that answers the request.
+- **Builds on:** —
+- **Serves:** —
+- **Applies to:** all code
+- **Status:** provisional
 
-### P-7 — Une règle de saisie, écrite une fois
+### P-6 — Personal data and secrets
 
-- **Énoncé :** Une règle de saisie s'écrit une seule fois, dans un module partagé par le client et le serveur ; à l'envoi, le serveur refait tout et fait autorité, car deux copies finissent par diverger.
-- **S'appuie sur :** —
-- **Sert :** —
-- **Porte sur :** saisies
-- **Statut :** provisoire
+- **Statement:** No personal data (IP address, identifier, entered content) written, logged or sent to a third party without a decision; an error is logged by its code, failing that by its message, never with the request or an entered value; outdated or revoked data (single-use link, session, attempt counter) is deleted at the latest at the next write; a secret is read at runtime through the name of its variable, never written in the code nor in `ai/`.
+- **Builds on:** —
+- **Serves:** —
+- **Applies to:** all code
+- **Status:** provisional
 
-### P-8 — Plan de fichiers validé, bases communes
+### P-7 — One input rule, written once
 
-- **Énoncé :** Avant de coder une demande d'interface ou d'architecture, Claude présente son plan d'organisation des fichiers et attend la validation de l'utilisateur. Le plan suit le DRY, du plus général au plus particulier (pour l'interface : mise en page, rubrique, carte, titre, texte, puis fonds, couleurs, espacements ; pour la logique : domaine, module, fonction) : à chaque étape, une base commune existe-t-elle ? oui, on l'emploie ; non, on la crée ; deux variantes possibles d'une même base, on interpelle l'utilisateur. Le DRY tient compte de tout le reste (lisibilité, accessibilité, convention), d'où un traitement élément par élément.
-- **S'appuie sur :** P-3 · C-3
-- **Sert :** —
-- **Porte sur :** tout le code
-- **Statut :** provisoire
-### P-9 — Construire pièce par pièce
+- **Statement:** An input rule is written only once, in a module shared by client and server; on submission, the server redoes everything and has authority, because two copies end up diverging.
+- **Builds on:** —
+- **Serves:** —
+- **Applies to:** inputs
+- **Status:** provisional
 
-- **Énoncé :** 1. Décomposer : chaque besoin à part ; pour une interaction ou un processus, ses états et ce qui les possède sont écrits avant le code. 2. Analyser l'existant : ce qui porte déjà un besoin est repris, ce qui le porte au milieu d'autre chose en est extrait (C-3) ; un parcours de vérification est relevé sur l'existant avant d'y toucher. 3. Sourcer : chaque ligne s'appuie sur la documentation officielle de la version employée, lue avant d'écrire et non résumée (cadre du Socle, puis langage, puis normes W3C, WHATWG, IETF ou ISO, puis guides des éditeurs) ; l'exemple officiel le plus proche est appliqué à la lettre ; un point non documenté est signalé comme tel. 4. Créer une pièce à la fois, chacune dans son fichier, de la feuille vers la racine, au plus petit qui fonctionne, et la tester seule avant la suivante (test nommé `F-n A<m>`) ; aucun autre chantier tant qu'elle n'est pas vérifiée. 5. Assembler et vérifier sur tous les parcours (P-5) ; au deuxième échec, repartir de l'exemple officiel au lieu de rapiécer. 6. Le tout en un seul tour, une fois le plan validé (P-8) ; livrer les fichiers, puis un tableau court pièce, test, source.
-- **S'appuie sur :** P-1 · P-2 · P-5 · P-8
-- **Sert :** —
-- **Porte sur :** tout le code
-- **Statut :** provisoire
-## 2. Règles d'usage
+### P-8 — Approved file plan, common bases
 
-Quand employer quel composant ou quel jeton, propres au projet. S'ajoutent au fil des arbitrages.
+- **Statement:** Before coding an interface or architecture request, Claude presents its file organisation plan and waits for the user's approval. The plan follows DRY, from the most general to the most specific (for the interface: layout, section, card, heading, text, then backgrounds, colours, spacing; for the logic: domain, module, function): at each step, does a common base exist? yes, use it; no, create it; two possible variants of one base, ask the user. DRY takes everything else into account (readability, accessibility, convention), hence an element-by-element treatment.
+- **Builds on:** P-3 · C-3
+- **Serves:** —
+- **Applies to:** all code
+- **Status:** provisional
+
+### P-9 — Build piece by piece
+
+- **Statement:** 1. Break down: each need apart; for an interaction or a process, its states and what owns them are written before the code. 2. Analyse what exists: what already carries a need is reused, what carries it amid other things is extracted from it (C-3); a verification path is recorded on what exists before touching it. 3. Source: every line rests on the official documentation of the version in use, read before writing and not summarised (framework of the Foundation, then language, then W3C, WHATWG, IETF or ISO standards, then vendor guides); the closest official example is applied to the letter; an undocumented point is flagged as such. 4. Create one piece at a time, each in its own file, from leaf to root, at the smallest that works, and test it alone before the next (test named `F-n A<m>`); no other work while it is not verified. 5. Assemble and check on every path (P-5); at the second failure, restart from the official example instead of patching. 6. All in a single turn, once the plan is approved (P-8); deliver the files, then a short table of piece, test, source.
+- **Builds on:** P-1 · P-2 · P-5 · P-8
+- **Serves:** —
+- **Applies to:** all code
+- **Status:** provisional
+
+## 2. Usage rules
+
+When to use which component or token, specific to the project. Added as decisions are made.
 
 ## 3. Conventions
 
-Rangement, nommage, langue du code, commentaires.
+Layout, naming, language of the code, comments.
 
-### C-1 — Rangement par module et par rôle
+### C-1 — Layout by module and by role
 
-- **Énoncé :** Ce qui ne sert qu'à un module (route, écran, domaine) vit dans son dossier ; ce qui est partagé, dans un dossier commun rangé par rôle (composants, effets, logique, données), selon la structure que recommande le cadre du Socle. Un élément est extrait et rangé selon son rôle, jamais selon son nombre d'usages ; cette extraction n'est pas une abstraction au sens de P-1.
-- **S'appuie sur :** —
-- **Sert :** —
-- **Porte sur :** arborescence
-- **Statut :** provisoire
+- **Statement:** What only serves one module (route, screen, domain) lives in its folder; what is shared, in a common folder organised by role (components, effects, logic, data), following the structure the framework of the Foundation recommends. An element is extracted and filed by its role, never by its number of uses; this extraction is not an abstraction in the sense of P-1.
+- **Builds on:** —
+- **Serves:** —
+- **Applies to:** file tree
+- **Status:** provisional
 
-### C-2 — Nommage
+### C-2 — Naming
 
-- **Énoncé :** Casse et forme des noms selon la convention officielle du langage et du cadre (en JavaScript : composants en `PascalCase`, un par fichier ; autres modules en camelCase ; hooks React en `use…`) ; dossiers, scripts et migrations en minuscules avec `-` ; tests à côté du code. Un nom vient, dans l'ordre, de la documentation officielle, de l'élément natif (balise, attribut, API), puis de nos choix débattus en conversation ; un nom nouveau se justifie.
-- **S'appuie sur :** P-2
-- **Sert :** —
-- **Porte sur :** tout le code
-- **Statut :** provisoire
+- **Statement:** Case and form of names follow the official convention of the language and framework; folders, scripts and migrations in lowercase with `-`; tests next to the code. A name comes, in order, from the official documentation, from the native element (tag, attribute, API), then from our choices debated in conversation; a new name is justified.
+- **Builds on:** P-2
+- **Serves:** —
+- **Applies to:** all code
+- **Status:** provisional
 
-### C-3 — Un fichier, un rôle
+### C-3 — One file, one role
 
-- **Énoncé :** Chaque fonction (état, navigation, effet, mesure, accès aux données) et chaque composant a son fichier dès son premier emploi, nommé par ce qu'il fait ; un composant assemble ses fonctions et rend son interface, il ne calcule pas ; une fonction sans interface va dans la logique de son domaine (C-1).
-- **S'appuie sur :** C-1
-- **Sert :** —
-- **Porte sur :** tout le code
-- **Statut :** provisoire
-### C-4 — Langue du code et des textes
+- **Statement:** Each function (state, navigation, effect, measurement, data access) and each component has its own file from its first use, named after what it does; a component assembles its functions and renders its interface, it does not compute; a function without interface goes into the logic of its domain (C-1).
+- **Builds on:** C-1
+- **Serves:** —
+- **Applies to:** all code
+- **Status:** provisional
 
-- **Énoncé :** Tout le code en anglais (fichiers, dossiers, identifiants, clés de texte, commits) ; commentaires en français. Clés de texte en camelCase, l'espace de noms en premier segment ; les fichiers de traduction ne portent que les libellés de l'interface, jamais un contenu venu des données ou d'une source.
-- **S'appuie sur :** —
-- **Sert :** —
-- **Porte sur :** tout le code · traductions
-- **Statut :** provisoire
+### C-4 — Language of code and texts
 
-### C-5 — Commentaires
+- **Statement:** Code, comments and commits in English (files, folders, identifiers, text keys); the texts the users read in the languages of the Foundation. Text keys in camelCase, the namespace as first segment; translation files only carry interface labels, never content coming from data or a source.
+- **Builds on:** —
+- **Serves:** —
+- **Applies to:** all code · translations
+- **Status:** provisional
 
-- **Énoncé :** Pas de code commenté laissé en place. Un commentaire, rare et court, dit pourquoi quand le code ne peut pas le dire (contrainte extérieure, piège mesuré), jamais ce que fait le code : s'il en a besoin, le code est mal nommé ou mal organisé, on le renomme ou on le réorganise. Dans un composant d'interface, seuls les titres qui séparent ses sections, les repères `// F-n R<m>`, le marqueur `// PROVISOIRE (F-n R<m>)` et les directives d'outils.
-- **S'appuie sur :** P-1
-- **Sert :** —
-- **Porte sur :** tout le code
-- **Statut :** provisoire
-### C-6 — Réglages nommés, en un seul endroit
+### C-5 — Comments
 
-- **Énoncé :** Tout réglage d'une fonction ou d'un effet (durée, délai, seuil, limite, intensité) est nommé et posé à un seul endroit : en constante en capitales en tête du fichier qui seul le lit, dans la base commune (jetons, configuration) quand plusieurs fichiers le lisent. Une fonction se comprend par sa seule organisation : noms clairs, réglages en tête, type des paramètres nommé, fonction courte.
-- **S'appuie sur :** P-3
-- **Sert :** —
-- **Porte sur :** tout le code
-- **Statut :** provisoire
-### C-7 — Données par une seule porte
+- **Statement:** No commented-out code left in place. A comment, rare and short, says why when the code cannot say it (external constraint, measured pitfall), never what the code does: if it needs one, the code is badly named or badly organised, rename or reorganise it. In an interface component, only the headings separating its sections, the `// F-n R<m>` markers, the `// PROVISIONAL (F-n R<m>)` marker and tool directives.
+- **Builds on:** P-1
+- **Serves:** —
+- **Applies to:** all code
+- **Status:** provisional
 
-- **Énoncé :** Les données s'obtiennent par une couche d'accès dédiée, côté serveur seulement. Tant que la base n'est pas branchée, elles viennent d'un fichier rangé comme des lignes de base et lu par un vrai appel asynchrone : un code qui traitera demain des données imite dès aujourd'hui le chemin réel au plus près.
-- **S'appuie sur :** P-3
-- **Sert :** —
-- **Porte sur :** accès aux données
-- **Statut :** provisoire
-### C-8 — Le style se choisit chez l'appelant
+### C-6 — Named settings, in one place
 
-- **Énoncé :** Une variante de disposition ou de style se choisit chez l'appelant, qui importe et assemble les styles exportés ; jamais un paramètre qui fait choisir son style au composant appelé (`variant`, `layout`, une classe passée en argument) : un composant commun ne porte que ce qui ne varie pas. Une propriété de style n'a qu'un auteur par élément.
-- **S'appuie sur :** C-3
-- **Sert :** —
-- **Porte sur :** composants d'interface
-- **Statut :** provisoire
+- **Statement:** Every setting of a function or an effect (duration, delay, threshold, limit, intensity) is named and set in one place: as an uppercase constant at the top of the only file that reads it, in the common base (tokens, configuration) when several files read it. A function is understood through its organisation alone: clear names, settings at the top, named parameter types, short function.
+- **Builds on:** P-3
+- **Serves:** —
+- **Applies to:** all code
+- **Status:** provisional
+
+### C-7 — Data through a single door
+
+- **Statement:** Data is obtained through a dedicated access layer, server side only. As long as the database is not connected, it comes from a file laid out like database rows and read through a real asynchronous call: code that will process data tomorrow mimics the real path as closely as possible today.
+- **Builds on:** P-3
+- **Serves:** —
+- **Applies to:** data access
+- **Status:** provisional
+
+### C-8 — Style is chosen by the caller
+
+- **Statement:** A layout or style variant is chosen by the caller, which imports and assembles the exported styles; never a parameter that makes the called component choose its style (`variant`, `layout`, a class passed as argument): a common component only carries what does not vary. A style property has only one author per element.
+- **Builds on:** C-3
+- **Serves:** —
+- **Applies to:** interface components
+- **Status:** provisional

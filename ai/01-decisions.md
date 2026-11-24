@@ -1,5 +1,5 @@
-# 01 — Décisions
+# 01 — Decisions
 
-Révision : 2026-11-18
+Revision: 2026-11-24
 
-Format d'une décision : titre `### D-n`, rangé sous un `## thème`, puis Énoncé (le choix et ce qu'il change, jamais la redite d'un objectif), Raison (les mots de l'utilisateur), Sert (O-n), S'appuie sur (D-n, S-n), Questions (facultatif), Statut (provisoire | actif). Toute décision est proposée à l'utilisateur et posée avec son accord.
+Format of a decision: heading `### D-n`, filed under a `## theme`, then Statement (the choice and what it changes, never a restatement of an objective), Reason (the user's words), Serves (O-n), Builds on (D-n, S-n), Questions (optional), Status (provisional | active). Every decision is proposed to the user and set with their agreement.

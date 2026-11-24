@@ -1,6 +1,6 @@
-// Registre d'usage : ce que Claude lit et écrit dans `ai/`, et les scripts qu'il lance, pour que la sélection de check-ai se fonde sur la mesure.
-// Jamais le texte d'une commande ni le contenu d'un fichier : seulement un chemin du projet ou un nom de script, un compte et une date.
-// État d'une session (erreurs déjà présentes, écriture pendant le tour, rappels donnés) : `ai/tmp/claude/hooks/`, jetable.
+// Usage ledger: what Claude reads and writes in `ai/`, and the scripts it runs, so that check-ai's selection rests on measurement.
+// Never the text of a command nor the content of a file: only a project path or a script name, a count and a date.
+// Session state (errors already there, writing during the turn, reminders given): `ai/tmp/claude/hooks/`, disposable.
 
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { dirname, isAbsolute, join, relative, resolve } from "node:path";
@@ -22,21 +22,21 @@ function readJson<T>(file: string, empty: T): T {
   }
 }
 
-// Deux hooks peuvent écrire en même temps : le renommage évite un fichier coupé ; une mise à jour perdue ne fausse qu'un compte.
+// Two hooks may write at once: the rename avoids a cut file; a lost update only skews a count.
 const writeJson = (file: string, value: unknown) => {
   try {
     mkdirSync(dirname(file), { recursive: true });
     writeFileSync(`${file}.${process.pid}`, `${JSON.stringify(value, null, 1)}\n`);
     renameSync(`${file}.${process.pid}`, file);
   } catch {
-    // Un registre manqué ne doit jamais bloquer Claude.
+    // A missed ledger entry must never block Claude.
   }
 };
 
 export const readLedger = (root = "."): Ledger => readJson(join(root, LEDGER), { files: {}, runs: {} });
 export const writeLedger = (ledger: Ledger, root = ".") => writeJson(join(root, LEDGER), ledger);
 
-const sessionFile = (root: string, id = "") => join(root, SESSIONS, `${id.replace(/[^\w-]/g, "") || "sans-id"}.json`);
+const sessionFile = (root: string, id = "") => join(root, SESSIONS, `${id.replace(/[^\w-]/g, "") || "no-id"}.json`);
 export const readSession = (root = ".", id?: string): Session => ({ baseline: [], dirty: false, told: [], ...readJson(sessionFile(root, id), {}) });
 export const writeSession = (session: Session, root = ".", id?: string) => writeJson(sessionFile(root, id), session);
 

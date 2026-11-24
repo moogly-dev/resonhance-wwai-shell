@@ -1,5 +1,5 @@
-// Rappels donnés au moment où ils servent (hook PreToolUse), une fois par session et par sujet, plutôt qu'en début de session où ils ne servent pas la tâche.
-// Retirer un rappel : l'ôter de REMINDERS ; en ajouter un : son test, et sa mesure dans ai/04-rituels.md.
+// Reminders given when they serve (PreToolUse hook), once per session and per subject, rather than at session start where they do not serve the task.
+// Remove a reminder: take it out of REMINDERS; add one: its test, and its measure in ai/04-rituals.md.
 
 import { GOLDEN_RULE, heavyCall } from "./economy.mts";
 
@@ -7,36 +7,36 @@ type Input = { file_path?: string; content?: string; new_string?: string; old_st
 export type ToolCall = { tool_name?: string; tool_input?: Input };
 type Reminder = { id: string; topic: (call: ToolCall, root: string, told: Set<string>) => string | undefined; say: (topic: string) => string };
 
-const LOT = /ai[\\/]tmp[\\/][^\\/]+\.json$/;
-// Ce qui engage le projet : un objectif, une décision, une fonctionnalité.
-const COMMITTING = /ai[\\/](?:00-objectifs\.md|01-decisions\.md|features[\\/])/;
-const SEARCHED = "autorite:web";
+const BATCH = /ai[\\/]tmp[\\/][^\\/]+\.json$/;
+// What commits the project: an objective, a decision, a feature.
+const COMMITTING = /ai[\\/](?:00-objectives\.md|01-decisions\.md|features[\\/])/;
+const SEARCHED = "authority:web";
 const BIN_FIRST = /\b(?:rm|rmdir|del|mv|Remove-Item|Move-Item|Rename-Item)\b[^\n|;&]*\bai[\\/](?!tmp[\\/])/i;
 
 const REMINDERS: Reminder[] = [
   {
-    id: "autorite",
+    id: "authority",
     topic: ({ tool_name: tool, tool_input: input = {} }) =>
-      tool === "WebSearch" || tool === "WebFetch" || (tool === "Write" && LOT.test(input.file_path ?? "") && input.content?.includes('"sources"')) ? "web" : undefined,
+      tool === "WebSearch" || tool === "WebFetch" || (tool === "Write" && BATCH.test(input.file_path ?? "") && input.content?.includes('"sources"')) ? "web" : undefined,
     say: () =>
-      "Autorité d'abord : texte officiel, norme, documentation de la version employée, revue à comité de lecture (rang 1), puis autorité reconnue (rang 2) ; un site de praticiens, la presse ou une encyclopédie (rang 3) n'est qu'une piste à remonter jusqu'à sa source primaire. Ce qui fonde un élément se garde par npm run ai:apply : en S s'il sert le projet, en M (\"for\": \"claude\") s'il ne sert que Claude.",
+      'Authority first: official text, standard, documentation of the version in use, peer-reviewed journal (rank 1), then recognised authority (rank 2); a practitioners\' site, the press or an encyclopedia (rank 3) is only a lead, to trace back to its primary source. What grounds an item is kept through npm run ai:apply: as S if it serves the project, as M ("for": "claude") if it only serves Claude.',
   },
   {
-    id: "sourcer",
+    id: "source-first",
     topic: ({ tool_name: tool, tool_input: input = {} }, _root, told) =>
-      (tool === "Write" || tool === "Edit") && COMMITTING.test(input.file_path ?? "") && !told.has(SEARCHED) ? "sans recherche" : undefined,
+      (tool === "Write" || tool === "Edit") && COMMITTING.test(input.file_path ?? "") && !told.has(SEARCHED) ? "no search" : undefined,
     say: () =>
-      "Sourcer d'abord : aucune recherche sur le web dans cette session. Avant de poser un objectif, une décision, une fonctionnalité ou une stack, chercher maintenant la plus haute autorité du domaine (documentation officielle de la version actuelle, norme, texte de loi), la citer dans la proposition et la garder en S-n par npm run ai:apply.",
+      "Source first: no web search in this session. Before setting an objective, a decision, a feature or a stack, search now for the highest authority of the field (official documentation of the current version, standard, law), cite it in the proposal and keep it as S-n through npm run ai:apply.",
   },
   {
-    id: "economie",
+    id: "economy",
     topic: (call, root) => heavyCall(call, root),
-    say: (topic) => `Appel coûteux en contexte (${topic}). ${GOLDEN_RULE}`,
+    say: (topic) => `Call costly in context (${topic}). ${GOLDEN_RULE}`,
   },
   {
-    id: "corbeille",
+    id: "bin",
     topic: ({ tool_name: tool, tool_input: input = {} }) => ((tool === "Bash" || tool === "PowerShell") && BIN_FIRST.test(input.command ?? "") ? "ai" : undefined),
-    say: () => "Corbeille : avant de supprimer, déplacer ou modifier en nombre dans ai/, npm run ai:bin -- <sujet> [chemins] ; un lot passe par npm run ai:apply.",
+    say: () => "Bin first: before deleting, moving or editing many files in ai/, npm run ai:bin -- <subject> [paths]; a batch goes through npm run ai:apply.",
   },
 ];
 

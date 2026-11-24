@@ -1,7 +1,8 @@
-# Le shell versionne son outillage IA (CLAUDE.md, ai/, .claude/settings.json) : c'est ce qu'il publie.
-# Ce qui naît à l'usage ou n'appartient qu'à une session reste dehors.
+# The shell versions its AI tooling (CLAUDE.md, ai/, .claude/settings.json): it is what it publishes.
+# What is born from use or only belongs to one session stays out.
 ai/bin/
 ai/tmp/
+ai/merge/
 ai/claude/usage.json
 ai/session.md
 ai/improvements.md

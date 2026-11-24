@@ -1,7 +1,7 @@
-# Index des sources de Claude
+# Claude's sources index
 
-Lire ce fichier d'abord, puis seulement l'entrée visée.
-Ce qui ne sert que Claude, ses outils et sa méthode, à part de ce qui sert le projet (`ai/sources/`) : aucun élément du projet ni le code de l'application ne cite un M-n, `npm run check:ai` le vérifie. Fiche de M-n : `ai/claude/sources/M-nnn.md`, sur trois chiffres, sur le modèle `ai/modeles/source.md` (`id: M-n`). Une source naît par `npm run ai:apply`, avec `"for": "claude"`, rangée sous une section `## n. Thème` de ce fichier, créée d'abord. Rang et fiabilité : l'échelle de `ai/sources/INDEX.md`. L'outillage change vite : au-delà de 180 jours, une source se revérifie ou sort.
+Read this file first, then only the target entry.
+What only serves Claude, its tools and its method, apart from what serves the project (`ai/sources/`): no project item nor the application's code cites an M-n, `npm run check:ai` checks it. M-n card: `ai/claude/sources/M-nnn.md`, three digits, on the template `ai/templates/source.md` (`id: M-n`). A source is born through `npm run ai:apply`, with `"for": "claude"`, filed under a `## n. Theme` section of this file, created first. Rank and reliability: the scale of `ai/sources/INDEX.md`. Tooling changes fast: beyond 180 days, a source is verified again or removed.
 
 ## 1. Claude Code
-- **M-1 — Hooks de Claude Code : entrée, sortie, matchers** · vérifié
+- **M-1 — Claude Code hooks: input, output, matchers** · verified
