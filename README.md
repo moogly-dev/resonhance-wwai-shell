@@ -43,7 +43,7 @@ Optionnel : les réglages globaux de Claude Code recommandés sont dans [docs/cl
 
 ## Faire évoluer le shell
 
-`npm install`, puis `npm test` et `npm run check:ai`. Les hooks de `.claude/settings.json` passent tous par `ai/scripts/hook.mts` ; tout script ou hook nouveau s'inscrit dans `ai/04-rituels.md`, sinon `check:ai` échoue.
+`npm install`, puis `npm run lint:ai`, `npm test` et `npm run check:ai`. Les hooks de `.claude/settings.json` passent tous par `ai/scripts/hook.mts` ; tout script ou hook nouveau s'inscrit dans `ai/04-rituels.md`, sinon `check:ai` échoue.
 
 ## Licence
 

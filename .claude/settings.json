@@ -5,7 +5,12 @@
       "Bash(npm run ai:bin *)",
       "Bash(npm run ai:apply *)",
       "Bash(npm run ai:tmp*)",
-      "Bash(npm run test)"
+      "Bash(npm run peek *)",
+      "Bash(npm run lint:ai*)",
+      "Bash(npm run test)",
+      "Bash(npm test *)",
+      "Bash(node ai/*)",
+      "Edit(/ai/tmp/claude/**)"
     ]
   },
   "hooks": {

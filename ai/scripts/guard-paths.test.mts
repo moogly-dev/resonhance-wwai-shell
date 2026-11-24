@@ -2,7 +2,17 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { fenceBreach, isForbidden } from "./guard-paths.mts";
+import { fenceBreach, isForbidden, promptTrap } from "./guard-paths.mts";
+
+describe("commandes qui font surgir un dialogue", () => {
+  it("refuse PowerShell et le code node à la volée, laisse passer un script", () => {
+    expect(promptTrap("PowerShell", "npx vitest run | Select-Object -Last 15")).toMatch(/^PowerShell refusé/);
+    expect(promptTrap("Bash", `cd /D/dev/x && node -e "console.log(1)"`)).toMatch(/^node -e refusé/);
+    expect(promptTrap("Bash", "node --eval 'x'")).toMatch(/^node -e refusé/);
+    expect(promptTrap("Bash", "node ai/tmp/claude/lire.mts --head 40")).toBeUndefined();
+    expect(promptTrap("Bash", "npm run peek -- logs/a.jsonl --around error")).toBeUndefined();
+  });
+});
 
 describe("barrière avant de lancer un script de ai/", () => {
   it("refuse un script jetable qui emploie le réseau, laisse passer un script sain et le code de l'application", () => {

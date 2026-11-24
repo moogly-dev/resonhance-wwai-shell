@@ -31,7 +31,8 @@ const REGISTRY = "ai/04-rituels.md";
 
 const REFERENCE = /\b([DFQRSOPUCGTM])-(\d+)\b/g;
 const RULE_REFERENCE = /\b(F-\d+) R(\d+)\b/g;
-const PATH = /\bai\/([\w.-]+(?:\/[\w.-]+)*)/g;
+// Un chemin de ai/ ne suit ni lettre ni tiret : « @anthropic-ai/sdk » est un nom de paquet, pas un chemin.
+const PATH = /(?<![\w-])ai\/([\w.-]+(?:\/[\w.-]+)*)/g;
 // `ai/bin/`, `ai/tmp/` et le registre d'usage naissent à l'usage : un renvoi vers eux n'a pas à exister.
 const DISPOSABLE = /^(?:bin|tmp)(?:\/|$)|^claude\/usage\.json$/;
 // Un numéro de fichier seul (« en 05 ») change de sens quand les fichiers changent : on cite le nom.

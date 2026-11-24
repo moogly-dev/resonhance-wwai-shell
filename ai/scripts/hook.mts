@@ -7,7 +7,8 @@ import { join } from "node:path";
 import { copyToBin } from "./ai-bin.mts";
 import { PURGED, purge } from "./ai-tmp.mts";
 import { BLANK, type Finding, SHELL_GITIGNORE, START, checkAi, formatReport } from "./check-ai.mts";
-import { GUARD_MESSAGE, fenceBreach, isForbidden } from "./guard-paths.mts";
+import { oversizedRead } from "./economy.mts";
+import { GUARD_MESSAGE, fenceBreach, isForbidden, promptTrap } from "./guard-paths.mts";
 import { remind } from "./reminders.mts";
 import { WRITERS, count, readLedger, readSession, recordCall, writeLedger, writeSession } from "./usage.mts";
 
@@ -58,6 +59,12 @@ function preToolUse(input: Input, root: string, now: Date): Outcome {
     count(ledger, "guard-paths:refus", dayOf(now));
     writeLedger(ledger, root);
     return { stderr: GUARD_MESSAGE, exitCode: 2 };
+  }
+  const refused = [["economy:refus", oversizedRead(input, root)], ["guard-paths:dialogue", promptTrap(tool, input.tool_input?.command)]].find(([, message]) => message);
+  if (refused) {
+    count(ledger, refused[0]!, dayOf(now));
+    writeLedger(ledger, root);
+    return { stderr: refused[1], exitCode: 2 };
   }
   const breach = WRITERS.has(tool) ? fenceBreach(input.tool_input?.command, root) : undefined;
   if (breach) {

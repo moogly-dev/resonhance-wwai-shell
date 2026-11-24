@@ -3,6 +3,7 @@
 
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { GOLDEN_RULE, heavyCall } from "./economy.mts";
 
 type Input = { file_path?: string; content?: string; new_string?: string; old_string?: string; command?: string };
 export type ToolCall = { tool_name?: string; tool_input?: Input };
@@ -48,6 +49,11 @@ const REMINDERS: Reminder[] = [
       (tool === "Write" || tool === "Edit") && COMMITTING.test(input.file_path ?? "") && !told.has(SEARCHED) ? "sans recherche" : undefined,
     say: () =>
       "Sourcer d'abord : aucune recherche sur le web dans cette session. Avant de proposer un objectif, une décision, une fonctionnalité ou une stack, chercher maintenant la plus haute autorité du domaine (documentation officielle de la version actuelle, norme, texte de loi), la citer dans la proposition et la garder en S-n par npm run ai:apply.",
+  },
+  {
+    id: "economie",
+    topic: (call, root) => heavyCall(call, root),
+    say: (topic) => `Appel coûteux en contexte (${topic}). ${GOLDEN_RULE}`,
   },
   {
     id: "corbeille",

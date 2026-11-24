@@ -485,6 +485,10 @@ describe("rapport", () => {
   });
 });
 
+test("un nom de paquet qui finit par -ai/ n'est pas un chemin", () => {
+  expect(check({ "CLAUDE.md": 'import Anthropic from "@anthropic-ai/sdk";\n' }).errors).toEqual([]);
+});
+
 describe("démarrage et .gitignore", () => {
   const AI_LINES = "node_modules/\n/ai/\nCLAUDE.md\n.claude/\n";
 

@@ -16,6 +16,16 @@ export const GUARD_MESSAGE =
 
 export const isForbidden = ({ tool_input: input }: Call) => FORBIDDEN.test(`${input?.file_path ?? ""}\n${input?.command ?? ""}`);
 
+// Les autorisations du projet sont écrites pour Bash : PowerShell et le code à la volée font surgir un dialogue à chaque appel,
+// et `node -e` échappe à la barrière, qui ne lit que les fichiers.
+const INLINE_CODE = /\bnode\s+(?:[^\n;&|]*\s)?(?:-e|--eval|-p|--print)\b/;
+export function promptTrap(tool = "", command = "") {
+  if (tool === "PowerShell") return "PowerShell refusé : les autorisations du projet sont écrites pour Bash (Git Bash) ; relancer la commande par l'outil Bash.";
+  if (tool === "Bash" && INLINE_CODE.test(command))
+    return "node -e refusé : un code à la volée demande une autorisation à chaque appel et échappe à la barrière. L'écrire dans ai/tmp/claude/<nom>.mts, puis node ai/tmp/claude/<nom>.mts ; pour réduire un contenu long, npm run peek.";
+  return undefined;
+}
+
 export function fenceBreach(command = "", root = ".") {
   for (const [, script] of command.matchAll(NODE_SCRIPT)) {
     const file = relative(resolve(root), resolve(root, script)).replaceAll("\\", "/");

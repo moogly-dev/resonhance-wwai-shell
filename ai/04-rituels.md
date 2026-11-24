@@ -41,8 +41,8 @@ Commandes de l'application (base, migrations, mise en ligne…), selon le Socle.
 ### R-5
 
 - **Déclencheur :** Automatique : avant chaque écriture ou commande de Claude
-- **Commandes :** `ai/scripts/hook.mts`, événement `PreToolUse`, par `ai/scripts/guard-paths.mts` (testé par `ai/scripts/guard-paths.test.mts`) : refuse tout chemin dans AppData ; le dossier de travail de Claude est `ai/tmp/claude/`, hors de git. Refuse aussi de lancer par `node` un script de `ai/`, jetable compris, qui franchit la barrière de R-1. Retirer : ôter l'appel de `hook.mts` et mettre ce rituel à jour
-- **Sélection :** retenu le 2026-11-18 : règle de l'utilisateur ; mesure : refus (`guard-paths:refus`)
+- **Commandes :** `ai/scripts/hook.mts`, événement `PreToolUse`, par `ai/scripts/guard-paths.mts` (testé par `ai/scripts/guard-paths.test.mts`) : refuse tout chemin dans AppData ; le dossier de travail de Claude est `ai/tmp/claude/`, hors de git. Refuse aussi de lancer par `node` un script de `ai/`, jetable compris, qui franchit la barrière de R-1. Refuse enfin ce qui fait surgir un dialogue d'autorisation à chaque appel : l'outil PowerShell (les autorisations sont écrites pour Bash) et le code `node -e` (qui échappe aussi à la barrière) ; le refus dit quoi faire à la place. Retirer : ôter l'appel de `hook.mts` et mettre ce rituel à jour
+- **Sélection :** retenu le 2026-11-18 : règle de l'utilisateur ; mesure : refus (`guard-paths:refus`) ; dialogues évités (`guard-paths:dialogue`) à l'essai jusqu'au 2026-12-24, retour de l'utilisateur du 2026-11-24 sur les dialogues de resonhance-web-extension
 - **Statut :** provisoire
 
 ### R-6
@@ -55,7 +55,7 @@ Commandes de l'application (base, migrations, mise en ligne…), selon le Socle.
 ### R-7
 
 - **Déclencheur :** Après toute modification d'un script de `ai/scripts/`, par Claude
-- **Commandes :** `cd /D/<chemin du projet> && npm test` — les tests des scripts (`ai/scripts/*.test.mts`) passent tous ; un comportement nouveau arrive avec son test. Lettre de lecteur en majuscule : depuis `/d/…`, Vitest se charge deux fois et échoue (« Cannot read properties of undefined (reading 'config') »), vérifié le 2026-11-18
+- **Commandes :** `npm run lint:ai` (types des scripts, par `ai/scripts/tsconfig.json`), puis `cd /D/<chemin du projet> && npm test` — aucune erreur de types ; les tests des scripts (`ai/scripts/*.test.mts`) passent tous ; un comportement nouveau arrive avec son test. Lettre de lecteur en majuscule : depuis `/d/…`, Vitest se charge deux fois et échoue (« Cannot read properties of undefined (reading 'config') »), vérifié le 2026-11-18
 - **Sélection :** retenu le 2026-11-18 : éprouvé sur Resonhance
 - **Statut :** provisoire
 
@@ -69,6 +69,13 @@ Commandes de l'application (base, migrations, mise en ligne…), selon le Socle.
 ### R-9
 
 - **Déclencheur :** Automatique : avant chaque appel d'outil de Claude, seulement quand l'appel touche une règle
-- **Commandes :** `ai/scripts/hook.mts`, événement `PreToolUse`, par `ai/scripts/reminders.mts` (testé par `ai/scripts/reminders.test.mts`) : un rappel en contexte, sans bloquer, une fois par session et par sujet. Sas, quand naît un O, D, F ou Q absent du mini-hub ; autorité des sources, à la première recherche sur le web ou au premier lot de sources ; sourcer, quand Claude écrit un objectif, une décision, une fonctionnalité ou le mini-hub sans avoir cherché sur le web de la session ; corbeille, avant de supprimer ou de déplacer dans `ai/`. Retirer un rappel : l'ôter de `reminders.mts`
+- **Commandes :** `ai/scripts/hook.mts`, événement `PreToolUse`, par `ai/scripts/reminders.mts` (testé par `ai/scripts/reminders.test.mts`) : un rappel en contexte, sans bloquer, une fois par session et par sujet. Sas, quand naît un O, D, F ou Q absent du mini-hub ; autorité des sources, à la première recherche sur le web ou au premier lot de sources ; sourcer, quand Claude écrit un objectif, une décision, une fonctionnalité ou le mini-hub sans avoir cherché sur le web de la session ; économie, à la lecture d'une image, d'un fichier lourd ou d'un outil déclaré lourd (R-10) ; corbeille, avant de supprimer ou de déplacer dans `ai/`. Retirer un rappel : l'ôter de `reminders.mts`
 - **Sélection :** essai jusqu'au 2026-12-11 ; mesure : rappels donnés (`reminders:*`) suivis d'effet, aucun jugé hors de propos par l'utilisateur
+- **Statut :** provisoire
+
+### R-10
+
+- **Déclencheur :** Avant de lire un contenu long (page, réponse d'API, log, PDF) ou de comparer deux versions d'un document, par Claude ; automatique : avant chaque `Read`
+- **Commandes :** `npm run peek -- <fichier> [--path a.0.b] [--around mot] [--diff autre] [--head n]` (`ai/scripts/peek.mts`, testé par `ai/scripts/peek.test.mts`) : forme et tailles, extraits autour d'un mot, lignes changées ; une sortie volumineuse se redirige d'abord vers `ai/tmp/claude/`. `ai/scripts/hook.mts`, événement `PreToolUse`, par `ai/scripts/economy.mts` (testé par `ai/scripts/economy.test.mts`) : refuse la lecture entière d'un fichier de plus de 60 Ko, hors image ; les outils du projet qui ramènent une page entière se déclarent dans `HEAVY_TOOLS`. Retirer : ôter l'appel de `oversizedRead` dans `hook.mts`, le script `peek` de `package.json`, et mettre ce rituel à jour
+- **Sélection :** essai jusqu'au 2026-12-24 ; mesure : refus (`economy:refus`) et rappels (`reminders:economie`) suivis d'une lecture réduite, aucun jugé bloquant à tort ; éprouvé sur resonhance-web-extension, règle de l'utilisateur du 2026-11-24 : « avant chaque process tu trouve la méthodologie la plus maligne efficace et rentable »
 - **Statut :** provisoire

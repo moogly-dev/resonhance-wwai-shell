@@ -11,5 +11,5 @@
     "strict": true,
     "skipLibCheck": true
   },
-  "include": ["ai/scripts/**/*.mts", "vitest.config.mts"]
+  "include": ["./**/*.mts", "../../vitest.config.mts"]
 }
